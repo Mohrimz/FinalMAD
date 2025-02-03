@@ -33,14 +33,16 @@ class _CartScreenState extends State<CartScreen> {
 
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                                content: Text(
-                                    "${product['name']} removed from cart")),
+                              content: Text(
+                                  "${product['name']} removed from cart"),
+                            ),
                           );
                         },
                         background: Container(
                           color: Colors.red,
                           alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 20),
                           child: const Icon(
                             Icons.delete,
                             color: Colors.white,
@@ -50,7 +52,6 @@ class _CartScreenState extends State<CartScreen> {
                           padding: const EdgeInsets.symmetric(
                               vertical: 8, horizontal: 16),
                           child: Card(
-                            //Card is used
                             elevation: 4,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -65,7 +66,9 @@ class _CartScreenState extends State<CartScreen> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                       image: DecorationImage(
-                                        image: AssetImage(product['imagePath']),
+                                        image: NetworkImage(
+                                          product['imagePath'],
+                                        ),
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -108,8 +111,7 @@ class _CartScreenState extends State<CartScreen> {
                                             onPressed: () {
                                               if (product['quantity'] > 1) {
                                                 setState(() {
-                                                  product[
-                                                      'quantity']--; 
+                                                  product['quantity']--;
                                                 });
                                               }
                                             },
@@ -120,8 +122,7 @@ class _CartScreenState extends State<CartScreen> {
                                                 Icons.add_circle_outline),
                                             onPressed: () {
                                               setState(() {
-                                                product[
-                                                    'quantity']++; 
+                                                product['quantity']++;
                                               });
                                             },
                                           ),
@@ -144,19 +145,17 @@ class _CartScreenState extends State<CartScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 8),
-                      Text(
+                      const Text(
                         'Your order is eligible for free delivery',
-                        style: const TextStyle(color: Colors.green),
+                        style: TextStyle(color: Colors.green),
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () {
-                          
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  MainScreen(toggleDarkMode: (context) {
+                              builder: (context) => MainScreen(toggleDarkMode: (context) {
                                 // Dark Mode toggling
                               }),
                             ),

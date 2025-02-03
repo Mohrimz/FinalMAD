@@ -46,7 +46,6 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-
 class MainScreen extends StatefulWidget {
   final Function toggleDarkMode;
 

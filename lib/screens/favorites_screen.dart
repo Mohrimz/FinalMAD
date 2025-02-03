@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 class FavoritesScreen extends StatefulWidget {
   final List<Map<String, dynamic>> favoriteProducts;
 
-  const FavoritesScreen({Key? key, required this.favoriteProducts}) : super(key: key);
+  const FavoritesScreen({Key? key, required this.favoriteProducts})
+      : super(key: key);
 
   @override
   _FavoritesScreenState createState() => _FavoritesScreenState();
@@ -14,7 +15,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   void _addToCart(Map<String, dynamic> product) {
     setState(() {
-      cartItems.add(product); 
+      cartItems.add(product);
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -40,13 +41,23 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               itemBuilder: (context, index) {
                 final product = widget.favoriteProducts[index];
                 return ListTile(
-                  leading: Image.asset(product['imagePath']),
+                  leading: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      image: DecorationImage(
+                        image: NetworkImage(product['imagePath']),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
                   title: Text(product['name']),
                   subtitle: Text(product['price']),
                   trailing: IconButton(
-                    icon: const Icon(Icons.shopping_cart), 
+                    icon: const Icon(Icons.shopping_cart),
                     onPressed: () {
-                      _addToCart(product); 
+                      _addToCart(product);
                     },
                   ),
                 );
