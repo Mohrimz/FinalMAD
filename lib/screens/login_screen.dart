@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:login/main.dart'; 
+import 'package:login/main.dart';
 import 'package:login/services/api_service.dart';
 import 'package:login/widgets/custom_text_field.dart';
 
@@ -17,40 +17,47 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
 
   void _submitForm() async {
-  if (_formKey.currentState!.validate()) {
-    setState(() {
-      _isLoading = true;
-    });
-
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-
-    try {
-      // Send login request to the API
-      final response = await ApiService.login(email, password);
-
-      if (response['success']) {
-        // Save the token locally
-        await 'hello';
-
-        // Navigate to the home screen
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MainScreen(toggleDarkMode: (context) {})));
-        
-      } else {
-        _showError(response['message']);
-      }
-    } catch (e) {
-      _showError('Login failed. Please try again.');
-    } finally {
+    if (_formKey.currentState!.validate()) {
       setState(() {
-        _isLoading = false;
+        _isLoading = true;
       });
+
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+
+      try {
+        // Send login request to the API
+        final response = await ApiService.login(email, password);
+        
+        // Debug: print the full API response
+        print("Login response: $response");
+
+        if (response['success']) {
+          // Navigate to the home screen, passing the user's name from the API response
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MainScreen(
+                toggleDarkMode: toggleDarkModePlaceholder,
+                userName: response['user']?['name'] ?? 'User', // Updated here!
+              ),
+            ),
+          );
+        } else {
+          _showError(response['message']);
+        }
+      } catch (e) {
+        _showError('Login failed. Please try again.');
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
-}
 
+  // A placeholder for toggleDarkMode since LoginScreen doesn't need to toggle it
+  void toggleDarkModePlaceholder() {}
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -66,6 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
+          // Top image background
           Positioned(
             top: 0,
             left: 0,
@@ -80,6 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
+          // Form container
           Positioned(
             top: MediaQuery.of(context).size.height * 0.25,
             left: 0,

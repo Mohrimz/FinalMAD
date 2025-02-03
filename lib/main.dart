@@ -3,7 +3,7 @@ import 'package:login/screens/cart_screen.dart';
 import 'package:login/screens/favorites_screen.dart';
 import 'package:login/screens/landing.dart';
 import 'package:login/screens/profile_screen.dart';
-import 'package:login/screens/login_screen.dart'; 
+import 'package:login/screens/login_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -41,15 +41,25 @@ class _MyAppState extends State<MyApp> {
               primaryColor: Colors.blue,
               hintColor: Colors.purple,
             ),
-      home: MainScreen(toggleDarkMode: toggleDarkMode),
+      // By default, show MainScreen with a default user name.
+      // (This might be replaced by the LoginScreen in your authentication flow.)
+      home: MainScreen(
+        toggleDarkMode: toggleDarkMode,
+        userName: 'User',
+      ),
     );
   }
 }
 
 class MainScreen extends StatefulWidget {
   final Function toggleDarkMode;
+  final String userName;
 
-  const MainScreen({Key? key, required this.toggleDarkMode}) : super(key: key);
+  const MainScreen({
+    Key? key,
+    required this.toggleDarkMode,
+    required this.userName,
+  }) : super(key: key);
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -72,18 +82,23 @@ class _MainScreenState extends State<MainScreen> {
 
   List<Widget> _screens() {
     return [
+      // Pass the userName to WelcomeScreen
       WelcomeScreen(
         favoriteProducts: favoriteProducts,
         onFavoriteToggle: toggleFavorite,
+        userName: widget.userName,
       ),
       FavoritesScreen(favoriteProducts: favoriteProducts),
       CartScreen(),
-      CustomProfileScreen(toggleDarkMode: widget.toggleDarkMode, logOut: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginScreen()), 
-        );
-      }),
+      CustomProfileScreen(
+        toggleDarkMode: widget.toggleDarkMode,
+        logOut: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+          );
+        },
+      ),
     ];
   }
 

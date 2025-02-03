@@ -73,7 +73,7 @@ class EditProfileScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => MainScreen(toggleDarkMode: toggleDarkMode)), // Pass toggleDarkMode
+                    MaterialPageRoute(builder: (context) => MainScreen(toggleDarkMode: toggleDarkMode, userName: '',)), // Pass toggleDarkMode
                   );
                 },
                 style: ElevatedButton.styleFrom(

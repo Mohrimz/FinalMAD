@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login/screens/cart_screen.dart';
-import 'package:login/screens/product_detail_screen.dart';
-import 'package:login/main.dart'; // Assumes your global `cart` is declared here
+import 'package:login/screens/product_detail_screen.dart' hide cart;
 
 class FavoritesScreen extends StatefulWidget {
   final List<Map<String, dynamic>> favoriteProducts;
@@ -15,7 +14,7 @@ class FavoritesScreen extends StatefulWidget {
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
   void _addToCart(Map<String, dynamic> product) {
-    // Use the global cart variable.
+    // Use the global cart variable from cart_screen.dart.
     // Check if the product is not already in the cart.
     if (!cart.any((item) => item['name'] == product['name'])) {
       cart.add({

@@ -7,11 +7,13 @@ import 'package:login/services/api_service.dart'; // Import the ApiService
 class WelcomeScreen extends StatefulWidget {
   final List<Map<String, dynamic>> favoriteProducts;
   final Function(Map<String, dynamic>) onFavoriteToggle;
+  final String userName; // New parameter to hold the user's name
 
   WelcomeScreen({
     Key? key,
     required this.favoriteProducts,
     required this.onFavoriteToggle,
+    required this.userName,
   }) : super(key: key);
 
   @override
@@ -39,8 +41,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             'price': '\$${product['price'] ?? 0}', // Handle null price
             'rating': (product['rating'] ?? 0.0).toDouble(), // Handle null rating
             'imagePath': product['target_file'] ?? '', // Handle null image URL
-            // You might not need to store 'isFavorite' locally anymore
-            // since we'll use widget.favoriteProducts to check.
           };
         }).toList();
         isLoading = false;
@@ -56,9 +56,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   void toggleFavorite(Map<String, dynamic> product) {
-    // Let the parent/global state handle favorite toggling.
     widget.onFavoriteToggle(product);
-    // Optionally, update the local UI (if needed) by calling setState.
     setState(() {});
   }
 
@@ -76,6 +74,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 20),
+            // Header showing "Welcome" and the user's name passed from MainScreen
             Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
               child: Row(
@@ -93,7 +92,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         ),
                       ),
                       Text(
-                        'Mohomed Rimzan',
+                        widget.userName,
                         style: TextStyle(
                           fontSize: screenWidth * 0.045,
                           color: isDarkMode ? Colors.white54 : Colors.grey,
@@ -101,6 +100,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
                     ],
                   ),
+                  // Search and notifications icons
                   Row(
                     children: [
                       Container(
@@ -127,7 +127,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.notifications_none, color: Colors.black),
+                          icon: const Icon(Icons.notifications_none,
+                              color: Colors.black),
                           onPressed: () {},
                         ),
                       ),
@@ -137,6 +138,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ),
             ),
             const SizedBox(height: 20),
+            // New Collection card
             Padding(
               padding: EdgeInsets.all(screenWidth * 0.05),
               child: Container(
@@ -179,7 +181,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 borderRadius: BorderRadius.circular(8),
                                 side: const BorderSide(color: Colors.blue),
                               ),
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
                             ),
                             child: const Text(
                               'Shop Now',
@@ -203,6 +206,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ),
               ),
             ),
+            // Categories section
             Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
               child: Row(
@@ -251,6 +255,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ),
             ),
             const SizedBox(height: 20),
+            // Featured products section
             Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
               child: Row(
@@ -285,8 +290,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           itemCount: products.length,
                           itemBuilder: (context, index) {
                             final product = products[index];
-                            // Instead of using the local product['isFavorite'] property,
-                            // determine the favorite status by checking the global favorite list.
+                            // Determine favorite status by checking the global favorite list.
                             bool isFavorite = widget.favoriteProducts.any(
                                 (fav) => fav['name'] == product['name']);
                             return FeaturedProductCard(
