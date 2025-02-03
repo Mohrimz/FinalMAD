@@ -2,6 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:login/main.dart';
 import 'package:login/screens/product_detail_screen.dart';
 
+// Function to calculate total amount
+double _calculateTotal() {
+  double total = 0;
+  for (var item in cart) {
+    double price = _parsePrice(item['price']);
+    int quantity = item['quantity'] ?? 1;
+    total += price * quantity;
+  }
+  return total;
+}
+
+// Helper function to parse a price string into a double.
+double _parsePrice(String priceStr) {
+  String cleaned = priceStr.replaceAll(RegExp(r'[^\d.]'), '');
+  return double.tryParse(cleaned) ?? 0.0;
+}
+
 class CartScreen extends StatefulWidget {
   @override
   _CartScreenState createState() => _CartScreenState();
@@ -10,6 +27,8 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
+    final totalAmount = _calculateTotal();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cart'),
@@ -28,29 +47,26 @@ class _CartScreenState extends State<CartScreen> {
                         direction: DismissDirection.endToStart,
                         onDismissed: (direction) {
                           setState(() {
-                            cart.removeAt(index); // Removing product from cart
+                            cart.removeAt(index);
                           });
 
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(
-                                  "${product['name']} removed from cart"),
+                              content: Text("${product['name']} removed from cart"),
                             ),
                           );
                         },
                         background: Container(
                           color: Colors.red,
                           alignment: Alignment.centerRight,
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: const Icon(
                             Icons.delete,
                             color: Colors.white,
                           ),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 16),
+                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                           child: Card(
                             elevation: 4,
                             shape: RoundedRectangleBorder(
@@ -60,15 +76,14 @@ class _CartScreenState extends State<CartScreen> {
                               padding: const EdgeInsets.all(8),
                               child: Row(
                                 children: [
+                                  // Product Image
                                   Container(
                                     width: 70,
                                     height: 70,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                       image: DecorationImage(
-                                        image: NetworkImage(
-                                          product['imagePath'],
-                                        ),
+                                        image: NetworkImage(product['imagePath']),
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -77,8 +92,7 @@ class _CartScreenState extends State<CartScreen> {
                                   // Product Details
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           product['name'],
@@ -106,8 +120,7 @@ class _CartScreenState extends State<CartScreen> {
                                       Row(
                                         children: [
                                           IconButton(
-                                            icon: const Icon(
-                                                Icons.remove_circle_outline),
+                                            icon: const Icon(Icons.remove_circle_outline),
                                             onPressed: () {
                                               if (product['quantity'] > 1) {
                                                 setState(() {
@@ -118,8 +131,7 @@ class _CartScreenState extends State<CartScreen> {
                                           ),
                                           Text('${product['quantity']}'),
                                           IconButton(
-                                            icon: const Icon(
-                                                Icons.add_circle_outline),
+                                            icon: const Icon(Icons.add_circle_outline),
                                             onPressed: () {
                                               setState(() {
                                                 product['quantity']++;
@@ -139,15 +151,26 @@ class _CartScreenState extends State<CartScreen> {
                     },
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
+                // Total Amount and Checkout Section
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    border: const Border(
+                      top: BorderSide(color: Colors.grey, width: 0.5),
+                    ),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Your order is eligible for free delivery',
-                        style: TextStyle(color: Colors.green),
+                      // Total Amount Display
+                      Text(
+                        'Total: ₹${totalAmount.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.right,
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
