@@ -9,6 +9,7 @@ class FeaturedProductCard extends StatelessWidget {
   final double rating;
   final bool isFavorite;
   final Function onFavoriteToggle;
+  final String description; // New property for the description
 
   const FeaturedProductCard({
     Key? key,
@@ -19,6 +20,7 @@ class FeaturedProductCard extends StatelessWidget {
     required this.rating,
     required this.isFavorite,
     required this.onFavoriteToggle,
+    required this.description, // Make it required
   }) : super(key: key);
 
   @override
@@ -26,6 +28,7 @@ class FeaturedProductCard extends StatelessWidget {
     return Material(
       child: InkWell(
         onTap: () {
+          // Navigate to ProductDetailScreen, now including description.
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -35,6 +38,7 @@ class FeaturedProductCard extends StatelessWidget {
                 category: category,
                 rating: rating,
                 price: price,
+                description: description, // Pass the description
               ),
             ),
           );
@@ -69,16 +73,17 @@ class FeaturedProductCard extends StatelessWidget {
                       height: 125,
                       width: double.infinity,
                       fit: BoxFit.cover,
-                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                      loadingBuilder:
+                          (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
                         if (loadingProgress == null) {
-                          // Image is fully loaded
                           return child;
                         } else {
-                          // Image is still loading
                           return Center(
                             child: CircularProgressIndicator(
                               value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
                                   : null,
                             ),
                           );
@@ -109,7 +114,8 @@ class FeaturedProductCard extends StatelessWidget {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 child: Text(
                   name,
                   style: const TextStyle(
@@ -131,7 +137,8 @@ class FeaturedProductCard extends StatelessWidget {
               ),
               const Spacer(),
               Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 20),
+                padding:
+                    const EdgeInsets.only(left: 10, right: 10, bottom: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -145,7 +152,8 @@ class FeaturedProductCard extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        const Icon(Icons.star, color: Colors.yellow, size: 14),
+                        const Icon(Icons.star,
+                            color: Colors.yellow, size: 14),
                         Text(
                           '$rating',
                           style: const TextStyle(

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:login/screens/search_screen.dart';
 import 'package:login/widgets/category_item.dart';
 import 'package:login/widgets/landing.dart';
-import 'package:login/services/api_service.dart'; // Import the ApiService
+import 'package:login/services/api_service.dart';
 
 class WelcomeScreen extends StatefulWidget {
   final List<Map<String, dynamic>> favoriteProducts;
   final Function(Map<String, dynamic>) onFavoriteToggle;
-  final String userName; // New parameter to hold the user's name
+  final String userName; // To hold the user's name
 
-  WelcomeScreen({
+  const WelcomeScreen({
     Key? key,
     required this.favoriteProducts,
     required this.onFavoriteToggle,
@@ -23,6 +23,7 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   List<Map<String, dynamic>> products = [];
   bool isLoading = true;
+  String selectedCategory = 'Nike';
 
   @override
   void initState() {
@@ -36,11 +37,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       setState(() {
         products = fetchedProducts.map((product) {
           return {
-            'name': product['name'] ?? 'No Name', // Handle null name
-            'category': 'Shoes', // Hardcode or use a valid field from the API
-            'price': '\$${product['price'] ?? 0}', // Handle null price
-            'rating': (product['rating'] ?? 0.0).toDouble(), // Handle null rating
-            'imagePath': product['target_file'] ?? '', // Handle null image URL
+            'name': product['name'] ?? 'No Name',
+            'category': 'Shoes', // Update if your API provides a category.
+            'price': '\$${product['price'] ?? 0}',
+            'rating': (product['rating'] ?? 0.0).toDouble(),
+            'imagePath': product['target_file'] ?? '',
+            // Include the description from the API
+            'description': product['description'] ?? 'No description available',
           };
         }).toList();
         isLoading = false;
@@ -61,7 +64,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   final List<String> categories = ['Nike', 'Adidas', 'Puma', 'Fila'];
-  String selectedCategory = 'Nike';
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +76,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 20),
-            // Header showing "Welcome" and the user's name passed from MainScreen
+            // Header: "Welcome" and the user's name
             Padding(
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
               child: Row(
@@ -127,8 +129,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.notifications_none,
-                              color: Colors.black),
+                          icon: const Icon(Icons.notifications_none, color: Colors.black),
                           onPressed: () {},
                         ),
                       ),
@@ -181,8 +182,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 borderRadius: BorderRadius.circular(8),
                                 side: const BorderSide(color: Colors.blue),
                               ),
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
                             ),
                             child: const Text(
                               'Shop Now',
@@ -298,9 +298,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               name: product['name'],
                               category: product['category'],
                               price: product['price'],
-                              rating: product['rating'],
+                              // Hardcode rating as 4.6
+                              rating: 4.6,
                               isFavorite: isFavorite,
                               onFavoriteToggle: () => toggleFavorite(product),
+                              description: product['description'] ??
+                                  'No description available',
                             );
                           },
                         ),

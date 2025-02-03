@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:login/screens/cart_screen.dart';
 
-// Global state
+// Global state for the cart
 final List<Map<String, dynamic>> cart = [];
 
 class ProductDetailScreen extends StatefulWidget {
@@ -10,14 +10,16 @@ class ProductDetailScreen extends StatefulWidget {
   final String category;
   final double rating;
   final String price;
+  final String description;
 
   const ProductDetailScreen({
     Key? key,
     required this.imagePath,
     required this.productName,
     required this.category,
-    required this.rating,
+    required this.rating, // This parameter is still required, but we won't use it for display.
     required this.price,
+    required this.description,
   }) : super(key: key);
 
   @override
@@ -30,6 +32,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   void initState() {
     super.initState();
+    // Check if the product is already in the cart.
     isInCart = cart.any((item) => item['name'] == widget.productName);
   }
 
@@ -55,94 +58,174 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.productName),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CartScreen()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Use Image.network for remote images
-            Image.network(
-              widget.imagePath,
-              height: 250,
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, progress) {
-                if (progress == null) return child;
-                return const Center(child: CircularProgressIndicator());
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return const Center(child: Icon(Icons.error, size: 50));
-              },
+      // Using a CustomScrollView with a SliverAppBar for a modern collapsible header.
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: 300,
+            backgroundColor: Colors.deepPurple,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
             ),
-            const SizedBox(height: 16),
-            Text(
-              widget.productName,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : Colors.black,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.shopping_cart),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CartScreen()),
+                  );
+                },
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              widget.category,
-              style: TextStyle(
-                fontSize: 18,
-                color: isDarkMode ? Colors.white : Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.price,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : Colors.black,
-                  ),
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.star, color: Colors.yellow),
-                    Text(
-                      '${widget.rating}',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      ),
+            ],
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                widget.productName,
+                style: const TextStyle(
+                  shadows: [
+                    Shadow(
+                      blurRadius: 4.0,
+                      color: Colors.black54,
+                      offset: Offset(0, 2),
                     ),
                   ],
                 ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: toggleCart,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isInCart ? Colors.green : Colors.blue,
               ),
-              child: Text(
-                isInCart ? 'Remove from Cart' : 'Add to Cart',
-                style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+              background: Hero(
+                tag: widget.productName,
+                child: Image.network(
+                  widget.imagePath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(child: Icon(Icons.error, size: 50));
+                  },
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+          // SliverList for the rest of the content
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Category and Price Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.category,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: isDarkMode
+                              ? Colors.white70
+                              : Colors.grey[700],
+                        ),
+                      ),
+                      Text(
+                        widget.price,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color:
+                              isDarkMode ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  // Hardcoded Rating Row (shows 4.6)
+                  Row(
+                    children: [
+                      const Icon(Icons.star, color: Colors.yellow, size: 20),
+                      const SizedBox(width: 4),
+                      Text(
+                        '4.6',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color:
+                              isDarkMode ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  // Description Card
+                  Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Description",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            widget.description,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: isDarkMode
+                                  ? Colors.grey[300]
+                                  : Colors.grey[800],
+                              height: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Add-to-Cart Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: toggleCart,
+                      icon: Icon(
+                        isInCart
+                            ? Icons.remove_shopping_cart
+                            : Icons.add_shopping_cart,
+                        color:
+                            isDarkMode ? Colors.white : Colors.black,
+                      ),
+                      label: Text(
+                        isInCart
+                            ? 'Remove from Cart'
+                            : 'Add to Cart',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color:
+                              isDarkMode ? Colors.white : Colors.black,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            isInCart ? Colors.green : Colors.deepPurple,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

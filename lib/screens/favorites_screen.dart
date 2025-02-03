@@ -83,6 +83,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                               ? (product['rating'] as num).toDouble()
                               : 0.0,
                           price: product['price'],
+                          // Pass the description, or a default value if it's null.
+                          description: product['description'] ?? 'No description available',
                         ),
                       ),
                     );
