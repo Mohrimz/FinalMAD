@@ -7,22 +7,6 @@ class CartScreen extends StatefulWidget {
   _CartScreenState createState() => _CartScreenState();
 }
 
-// Example global cart list. Make sure to define and manage this list in your app.
-List<Map<String, dynamic>> cart = [
-  {
-    'name': 'Product 1',
-    'price': 100,
-    'quantity': 1,
-    'imagePath': 'https://via.placeholder.com/150'
-  },
-  {
-    'name': 'Product 2',
-    'price': 200,
-    'quantity': 2,
-    'imagePath': 'https://via.placeholder.com/150'
-  }
-];
-
 class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
