@@ -39,7 +39,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             'price': '\$${product['price'] ?? 0}', // Handle null price
             'rating': (product['rating'] ?? 0.0).toDouble(), // Handle null rating
             'imagePath': product['target_file'] ?? '', // Handle null image URL
-            'isFavorite': false, // Default favorite status
+            // You might not need to store 'isFavorite' locally anymore
+            // since we'll use widget.favoriteProducts to check.
           };
         }).toList();
         isLoading = false;
@@ -55,10 +56,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   void toggleFavorite(Map<String, dynamic> product) {
-    setState(() {
-      product['isFavorite'] = !product['isFavorite'];
-      widget.onFavoriteToggle(product);
-    });
+    // Let the parent/global state handle favorite toggling.
+    widget.onFavoriteToggle(product);
+    // Optionally, update the local UI (if needed) by calling setState.
+    setState(() {});
   }
 
   final List<String> categories = ['Nike', 'Adidas', 'Puma', 'Fila'];
@@ -284,7 +285,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           itemCount: products.length,
                           itemBuilder: (context, index) {
                             final product = products[index];
-                            bool isFavorite = product['isFavorite'];
+                            // Instead of using the local product['isFavorite'] property,
+                            // determine the favorite status by checking the global favorite list.
+                            bool isFavorite = widget.favoriteProducts.any(
+                                (fav) => fav['name'] == product['name']);
                             return FeaturedProductCard(
                               imagePath: product['imagePath'],
                               name: product['name'],

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:login/widgets/custom_text_field.dart';
 import 'package:login/screens/login_screen.dart';
-import 'package:login/screens/common_screen.dart'; // Import your CommonScreen
+import 'package:login/screens/common_screen.dart';
+import 'package:login/services/api_service.dart'; // Import ApiService
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -13,14 +14,70 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  // For simplicity we use the same password for confirmation.
+  // In a production app, you might add a separate confirm password field.
   final _dobController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  void _submitForm() {
+  bool _isLoading = false;
+
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginScreen()));
-      print('Signing up...');
+      // Show loading indicator
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        // Call the API service to register the user.
+        final response = await ApiService.register(
+          _nameController.text.trim(),
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+          _passwordController.text.trim(), // Using the same value for password_confirmation.
+        );
+
+        // You can print or process the response if needed.
+        print('User registered successfully: ${response['user']}');
+
+        // Optionally, show a success message.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Registration successful!'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // Navigate to the LoginScreen.
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+      } catch (e) {
+        // Display error message if registration fails.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Registration failed: ${e.toString()}'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      } finally {
+        // Hide loading indicator
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _dobController.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -29,6 +86,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       body: Stack(
         children: [
+          // Background image
           Positioned(
             top: 0,
             left: 0,
@@ -46,7 +104,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: IconButton(
                   icon: const Icon(Icons.arrow_back, color: Colors.white),
                   onPressed: () {
-                 
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => CommonScreen()),
@@ -56,6 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
           ),
+          // Form container
           Positioned(
             top: MediaQuery.of(context).size.height * 0.25,
             left: 0,
@@ -189,24 +247,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           textColor: isDarkMode ? Colors.white : Colors.black, 
                         ),
                         const SizedBox(height: 30),
-                        ElevatedButton(
-                          onPressed: _submitForm,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            padding: EdgeInsets.symmetric(vertical: 16.0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                          child: Text(
-                            'Sign up',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                        _isLoading
+                            ? Center(child: CircularProgressIndicator())
+                            : ElevatedButton(
+                                onPressed: _submitForm,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.black,
+                                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Sign up',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                         const SizedBox(height: 20),
                       ],
                     ),

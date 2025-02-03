@@ -13,9 +13,34 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body); // Success response
+      return jsonDecode(response.body);
     } else {
       throw Exception('Login failed: ${response.body}');
+    }
+  }
+
+  // Register API
+  static Future<Map<String, dynamic>> register(
+    String name,
+    String email,
+    String password,
+    String passwordConfirmation,
+  ) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/register'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'name': name,
+        'email': email,
+        'password': password,
+        'password_confirmation': passwordConfirmation,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Register failed: ${response.body}');
     }
   }
 
@@ -29,7 +54,7 @@ class ApiService {
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
       if (responseData['success'] == true && responseData['data'] != null) {
-        return responseData['data']; // Return the list of products
+        return responseData['data'];
       } else {
         throw Exception('No products found');
       }
