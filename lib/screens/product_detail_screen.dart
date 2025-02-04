@@ -53,14 +53,34 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     });
   }
 
+  /// Helper method to build the product image.
+  /// If the imagePath starts with "assets/", it loads a local asset;
+  /// otherwise, it loads a network image.
+  Widget _buildProductImage() {
+    if (widget.imagePath.startsWith("assets/")) {
+      return Image.asset(
+        widget.imagePath,
+        fit: BoxFit.cover,
+      );
+    } else {
+      return Image.network(
+        widget.imagePath,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return const Center(child: Icon(Icons.error, size: 50));
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      // Using a CustomScrollView with a SliverAppBar for a modern collapsible header.
       body: CustomScrollView(
         slivers: [
-          // SliverAppBar with the image as background.
           SliverAppBar(
             pinned: true,
             expandedHeight: 300,
@@ -80,21 +100,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 },
               ),
             ],
-            // Remove the title so that it doesn't appear over the image.
             flexibleSpace: FlexibleSpaceBar(
+              // Use a Hero for smooth transition between screens.
               background: Hero(
                 tag: widget.productName,
-                child: Image.network(
-                  widget.imagePath,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Center(child: Icon(Icons.error, size: 50));
-                  },
-                ),
+                child: _buildProductImage(),
               ),
             ),
           ),
-          // The rest of the content below the image.
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -111,7 +124,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  // Category and Price Row
+                  // Category and Price Row.
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -133,7 +146,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  // Hardcoded Rating Row (shows 4.6)
+                  // Hardcoded Rating Row (shows 4.6).
                   Row(
                     children: [
                       const Icon(Icons.star, color: Colors.yellow, size: 20),
@@ -148,7 +161,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // Description Card
+                  // Description Card.
                   Card(
                     elevation: 4,
                     shape: RoundedRectangleBorder(
@@ -180,7 +193,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // Add-to-Cart Button
+                  // Add-to-Cart Button.
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
