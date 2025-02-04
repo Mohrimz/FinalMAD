@@ -1,183 +1,253 @@
 import 'package:flutter/material.dart';
+import 'package:login/screens/product_detail_screen.dart';
+import 'package:login/services/api_service.dart';
 
-class SearchScreen extends StatelessWidget {
+// Global cart state (for simplicity; consider a better state management approach for production)
+final List<Map<String, dynamic>> cart = [];
+
+// ******************** SEARCH SCREEN ********************
+
+class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
 
   @override
+  _SearchScreenState createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
+  List<Map<String, dynamic>> products = [];
+  bool isLoading = true;
+  String searchQuery = "";
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProducts();
+  }
+
+  // Fetch products from your API (same as in WelcomeScreen)
+  Future<void> fetchProducts() async {
+    try {
+      final fetchedProducts = await ApiService.fetchProducts();
+      setState(() {
+        products = fetchedProducts.map((product) {
+          return {
+            'name': product['name'] ?? 'No Name',
+            'category': 'Shoes', // Update if your API provides a category.
+            'price': '\$${product['price'] ?? 0}',
+            'rating': (product['rating'] ?? 0.0).toDouble(),
+            'imagePath': product['target_file'] ?? '',
+            'description': product['description'] ?? 'No description available',
+          };
+        }).toList();
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load products: $e')),
+      );
+    }
+  }
+
+  // Filter products based on search query.
+  List<Map<String, dynamic>> get filteredProducts {
+    if (searchQuery.isEmpty) return products;
+    return products
+        .where((product) => product['name']
+            .toString()
+            .toLowerCase()
+            .contains(searchQuery.toLowerCase()))
+        .toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    // Colors for dark/light modes.
+    final searchBarBgColor = isDarkMode ? Colors.grey[800] : Colors.grey[200];
+    final searchHintColor = isDarkMode ? Colors.grey[400] : Colors.grey;
+    final cardColor = isDarkMode ? Colors.grey[850] : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        title: const Text('Search'),
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: Icon(Icons.arrow_back, color: textColor),
+          onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'Search',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Search Field
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.grey[200], 
+                color: searchBarBgColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.search, color: Colors.grey),
-                  SizedBox(width: 10),
+                  Icon(Icons.search, color: searchHintColor),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          searchQuery = value;
+                        });
+                      },
+                      style: TextStyle(color: textColor),
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Trending',
-                        hintStyle: TextStyle(color: Colors.grey),
+                        hintText: 'Search products...',
+                        hintStyle: TextStyle(color: searchHintColor),
                       ),
                     ),
                   ),
-                  Icon(Icons.tune, color: Colors.grey), 
+                  Icon(Icons.tune, color: searchHintColor),
                 ],
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            // Grid Display of Products
             Expanded(
-              child: GridView.builder(
-                padding: EdgeInsets.all(10),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, 
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.7, 
-                ),
-                itemCount: 6, 
-                itemBuilder: (context, index) {
-                  List<String> productNames = [
-                    'Nike Air Force 1 \'07',
-                    'Nike Air Max 270',
-                    'Nike Air Force 1 \'07',
-                    'Nike Air Max 270',
-                    'Nike Air Force 1 \'07',
-                    'Nike Air Max 270',
-                  ];
-
-                  List<String> productImages = [
-                    'assets/images/Shoe1.png',
-                    'assets/images/Shoe2.png',
-                    'assets/images/Shoe1.png',
-                    'assets/images/Shoe2.png',
-                    'assets/images/Shoe1.png',
-                    'assets/images/Shoe2.png',
-                  ];
-
-                  List<String> productPrices = ['\$250', '\$160'];
-
-                  return Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(15),
-                                topRight: Radius.circular(15),
-                              ),
-                              child: Image.asset(
-                                productImages[index % productImages.length],
-                                height: 120,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Positioned(
-                              top: 10,
-                              right: 10,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(Icons.favorite_border,
-                                    color: Colors.blue),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                productNames[index],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              Text(
-                                'Men\'s Shoes',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    productPrices[index % productPrices.length],
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : filteredProducts.isEmpty
+                      ? const Center(child: Text('No products found'))
+                      : GridView.builder(
+                          padding: const EdgeInsets.all(10),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 0.7,
+                          ),
+                          itemCount: filteredProducts.length,
+                          itemBuilder: (context, index) {
+                            final product = filteredProducts[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ProductDetailScreen(
+                                      imagePath: product['imagePath'],
+                                      productName: product['name'],
+                                      category: product['category'],
+                                      rating: product['rating'],
+                                      price: product['price'],
+                                      description: product['description'],
                                     ),
                                   ),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.star,
-                                          color: Colors.yellow, size: 14),
-                                      Text(
-                                        '4.5',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.black,
-                                        ),
+                                );
+                              },
+                              child: Card(
+                                color: cardColor,
+                                elevation: 5,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Product Image (no heart icon)
+                                    ClipRRect(
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(15),
+                                        topRight: Radius.circular(15),
                                       ),
-                                    ],
-                                  ),
-                                ],
+                                      child: Image.network(
+                                        product['imagePath'],
+                                        height: 120,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return Center(
+                                            child: Icon(
+                                              Icons.error,
+                                              size: 50,
+                                              color: textColor,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            product['name'],
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                              color: textColor,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            product['category'],
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: isDarkMode
+                                                  ? Colors.grey[400]
+                                                  : Colors.grey,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                product['price'],
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: textColor,
+                                                ),
+                                              ),
+                                              Row(
+                                                children: [
+                                                  const Icon(Icons.star,
+                                                      color: Colors.yellow,
+                                                      size: 14),
+                                                  const SizedBox(width: 2),
+                                                  Text(
+                                                    '4.6', // Alternatively, display product['rating']
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: textColor,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
-                      ],
-                    ),
-                  );
-                },
-              ),
             ),
           ],
         ),

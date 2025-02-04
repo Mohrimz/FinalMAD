@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:login/screens/cart_screen.dart';
 
@@ -17,7 +18,7 @@ class ProductDetailScreen extends StatefulWidget {
     required this.imagePath,
     required this.productName,
     required this.category,
-    required this.rating, // This parameter is still required, but we won't use it for display.
+    required this.rating,
     required this.price,
     required this.description,
   }) : super(key: key);
@@ -58,9 +59,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      // Using a CustomScrollView with a SliverAppBar for a modern collapsible header.
       body: CustomScrollView(
         slivers: [
+          // SliverAppBar with the image as background.
           SliverAppBar(
             pinned: true,
             expandedHeight: 300,
@@ -80,19 +81,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 },
               ),
             ],
+            // Remove the title so that it doesn't appear over the image.
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                widget.productName,
-                style: const TextStyle(
-                  shadows: [
-                    Shadow(
-                      blurRadius: 4.0,
-                      color: Colors.black54,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-              ),
               background: Hero(
                 tag: widget.productName,
                 child: Image.network(
@@ -105,13 +95,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ),
           ),
-          // SliverList for the rest of the content
+          // The rest of the content below the image.
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Product Name below the image.
+                  Text(
+                    widget.productName,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   // Category and Price Row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -120,9 +120,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         widget.category,
                         style: TextStyle(
                           fontSize: 16,
-                          color: isDarkMode
-                              ? Colors.white70
-                              : Colors.grey[700],
+                          color: isDarkMode ? Colors.white70 : Colors.grey[700],
                         ),
                       ),
                       Text(
@@ -130,8 +128,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color:
-                              isDarkMode ? Colors.white : Colors.black,
+                          color: isDarkMode ? Colors.white : Colors.black,
                         ),
                       ),
                     ],
@@ -146,8 +143,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         '4.6',
                         style: TextStyle(
                           fontSize: 16,
-                          color:
-                              isDarkMode ? Colors.white : Colors.black,
+                          color: isDarkMode ? Colors.white : Colors.black,
                         ),
                       ),
                     ],
@@ -176,9 +172,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             widget.description,
                             style: TextStyle(
                               fontSize: 16,
-                              color: isDarkMode
-                                  ? Colors.grey[300]
-                                  : Colors.grey[800],
+                              color: isDarkMode ? Colors.grey[300] : Colors.grey[800],
                               height: 1.5,
                             ),
                           ),
@@ -193,27 +187,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     child: ElevatedButton.icon(
                       onPressed: toggleCart,
                       icon: Icon(
-                        isInCart
-                            ? Icons.remove_shopping_cart
-                            : Icons.add_shopping_cart,
-                        color:
-                            isDarkMode ? Colors.white : Colors.black,
+                        isInCart ? Icons.remove_shopping_cart : Icons.add_shopping_cart,
+                        color: isDarkMode ? Colors.white : Colors.black,
                       ),
                       label: Text(
-                        isInCart
-                            ? 'Remove from Cart'
-                            : 'Add to Cart',
+                        isInCart ? 'Remove from Cart' : 'Add to Cart',
                         style: TextStyle(
                           fontSize: 16,
-                          color:
-                              isDarkMode ? Colors.white : Colors.black,
+                          color: isDarkMode ? Colors.white : Colors.black,
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            isInCart ? Colors.green : Colors.deepPurple,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 16),
+                        backgroundColor: isInCart ? Colors.green : Colors.deepPurple,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
