@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login/screens/search_screen.dart';
+import 'package:login/screens/step_counter_screen.dart';
 import 'package:login/widgets/category_item.dart';
 import 'package:login/widgets/landing.dart';
 import 'package:login/services/api_service.dart';
@@ -104,37 +105,45 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                   // Search and notifications icons
                   Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.search, color: Colors.black),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SearchScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.notifications_none, color: Colors.black),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ],
-                  ),
+  children: [
+    Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IconButton(
+        icon: const Icon(Icons.search, color: Colors.black),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SearchScreen(),
+            ),
+          );
+        },
+      ),
+    ),
+    const SizedBox(width: 10),
+    // New Step Counter Icon (instead of the notification icon)
+    Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IconButton(
+        icon: const Icon(Icons.directions_run, color: Colors.black),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const StepCounterScreen(),
+            ),
+          );
+        },
+      ),
+    ),
+  ],
+),
                 ],
               ),
             ),
