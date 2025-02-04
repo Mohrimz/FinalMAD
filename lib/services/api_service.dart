@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
@@ -62,4 +63,10 @@ class ApiService {
       throw Exception('Failed to load products: ${response.body}');
     }
   }
+}
+
+Future<List<dynamic>> loadDummyProducts() async {
+  final String jsonString = await rootBundle.loadString('assets/dummy_products.json');
+  final Map<String, dynamic> data = jsonDecode(jsonString);
+  return data['products'];
 }

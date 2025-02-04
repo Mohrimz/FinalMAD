@@ -1,9 +1,18 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:login/screens/search_screen.dart';
 import 'package:login/screens/step_counter_screen.dart';
 import 'package:login/widgets/category_item.dart';
 import 'package:login/widgets/landing.dart';
-import 'package:login/services/api_service.dart';
+import 'package:login/services/api_service.dart'; 
+
+// A helper function to load dummy products from assets.
+Future<List<dynamic>> loadDummyProducts(BuildContext context) async {
+  final String jsonString = await DefaultAssetBundle.of(context)
+      .loadString('assets/dummy_products.json');
+  final Map<String, dynamic> data = jsonDecode(jsonString);
+  return data['products'];
+}
 
 class WelcomeScreen extends StatefulWidget {
   final List<Map<String, dynamic>> favoriteProducts;
@@ -24,6 +33,7 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   List<Map<String, dynamic>> products = [];
   bool isLoading = true;
+  bool _isOffline = false; // Flag to indicate offline mode
   String selectedCategory = 'Nike';
 
   @override
@@ -43,19 +53,40 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             'price': '\$${product['price'] ?? 0}',
             'rating': (product['rating'] ?? 0.0).toDouble(),
             'imagePath': product['target_file'] ?? '',
-            // Include the description from the API
             'description': product['description'] ?? 'No description available',
           };
         }).toList();
         isLoading = false;
       });
     } catch (e) {
+      print("Error fetching products from API: $e");
+      // Mark as offline and load dummy data from a local JSON file.
       setState(() {
-        isLoading = false;
+        _isOffline = true;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load products: $e')),
-      );
+      try {
+        final dummyProducts = await loadDummyProducts(context);
+        setState(() {
+          products = dummyProducts.map((product) {
+            return {
+              'name': product['name'] ?? 'No Name',
+              'category': 'Shoes',
+              'price': '\$${product['price'] ?? 0}',
+              'rating': (product['rating'] ?? 0.0).toDouble(),
+              'imagePath': product['target_file'] ?? '',
+              'description': product['description'] ?? 'No description available',
+            };
+          }).toList();
+          isLoading = false;
+        });
+      } catch (localError) {
+        setState(() {
+          isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load products: $localError')),
+        );
+      }
     }
   }
 
@@ -76,6 +107,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Offline Banner (only shows when _isOffline is true)
+            if (_isOffline)
+              Container(
+                width: double.infinity,
+                color: Colors.redAccent,
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  "You're offline.",
+                  style: TextStyle(color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             const SizedBox(height: 20),
             // Header: "Welcome" and the user's name
             Padding(
@@ -103,47 +146,46 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
                     ],
                   ),
-                  // Search and notifications icons
+                  // Search and Step Counter icons
                   Row(
-  children: [
-    Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: IconButton(
-        icon: const Icon(Icons.search, color: Colors.black),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const SearchScreen(),
-            ),
-          );
-        },
-      ),
-    ),
-    const SizedBox(width: 10),
-    // New Step Counter Icon (instead of the notification icon)
-    Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: IconButton(
-        icon: const Icon(Icons.directions_run, color: Colors.black),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const StepCounterScreen(),
-            ),
-          );
-        },
-      ),
-    ),
-  ],
-),
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.search, color: Colors.black),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SearchScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.directions_run, color: Colors.black),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const StepCounterScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -307,7 +349,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               name: product['name'],
                               category: product['category'],
                               price: product['price'],
-                              // Hardcode rating as 4.6
                               rating: 4.6,
                               isFavorite: isFavorite,
                               onFavoriteToggle: () => toggleFavorite(product),
