@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:login/main.dart';
 
-
 class EditProfileScreen extends StatelessWidget {
-  final Function toggleDarkMode; 
+  // If you no longer need a manual toggle, you can remove toggleDarkMode from the constructor.
+  // final Function toggleDarkMode; 
 
-  const EditProfileScreen({Key? key, required this.toggleDarkMode}) : super(key: key); 
+  const EditProfileScreen({Key? key}) : super(key: key); 
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +73,11 @@ class EditProfileScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => MainScreen(toggleDarkMode: toggleDarkMode, userName: '',)), // Pass toggleDarkMode
+                    MaterialPageRoute(
+                      builder: (context) => MainScreen(
+                        userName: '', // Pass the user's name if needed.
+                      ),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(

@@ -28,6 +28,11 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final totalAmount = _calculateTotal();
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    // Choose background and text colors for the total container based on the theme.
+    final containerColor = isDarkMode ? Colors.grey[800] : Colors.grey[200];
+    final textColor = isDarkMode ? Colors.white : Colors.black;
 
     return Scaffold(
       appBar: AppBar(
@@ -155,7 +160,7 @@ class _CartScreenState extends State<CartScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
+                    color: containerColor,
                     border: const Border(
                       top: BorderSide(color: Colors.grey, width: 0.5),
                     ),
@@ -166,9 +171,10 @@ class _CartScreenState extends State<CartScreen> {
                       // Total Amount Display
                       Text(
                         'Total: ₹${totalAmount.toStringAsFixed(2)}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color: textColor,
                         ),
                         textAlign: TextAlign.right,
                       ),
@@ -176,12 +182,11 @@ class _CartScreenState extends State<CartScreen> {
                       ElevatedButton(
                         onPressed: () {
                           Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => CheckoutForm(),
-  ),
-);
-
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CheckoutForm(),
+                            ),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,

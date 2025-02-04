@@ -63,7 +63,11 @@ class CustomProfileScreen extends StatelessWidget {
                         icon: Icons.person,
                         title: 'My Profile',
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfileScreen(toggleDarkMode: toggleDarkMode)));
+                          Navigator.push(
+  context,
+  MaterialPageRoute(builder: (context) => EditProfileScreen()),
+);
+
                         },
                         textColor: isDarkMode ? Colors.white : Colors.black,
                       ),

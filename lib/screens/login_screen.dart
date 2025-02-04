@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:login/main.dart';
+import 'package:login/main.dart'; // Make sure this import points to your updated main.dart.
 import 'package:login/services/api_service.dart';
 import 'package:login/widgets/custom_text_field.dart';
 
@@ -10,7 +10,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _emailController    = TextEditingController();
   final _passwordController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
@@ -22,24 +22,23 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = true;
       });
 
-      final email = _emailController.text.trim();
+      final email    = _emailController.text.trim();
       final password = _passwordController.text.trim();
 
       try {
-        // Send login request to the API
+        // Send login request to the API.
         final response = await ApiService.login(email, password);
-        
-        // Debug: print the full API response
+
+        // Debug: print the full API response.
         print("Login response: $response");
 
         if (response['success']) {
-          // Navigate to the home screen, passing the user's name from the API response
+          // Navigate to the MainScreen with the user's name (no manual toggle required now).
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => MainScreen(
-                toggleDarkMode: toggleDarkModePlaceholder,
-                userName: response['user']?['name'] ?? 'User', // Updated here!
+                userName: response['user']?['name'] ?? 'User',
               ),
             ),
           );
@@ -56,9 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // A placeholder for toggleDarkMode since LoginScreen doesn't need to toggle it
-  void toggleDarkModePlaceholder() {}
-
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
@@ -73,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // Top image background
+          // Top image background.
           Positioned(
             top: 0,
             left: 0,
@@ -88,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          // Form container
+          // Form container.
           Positioned(
             top: MediaQuery.of(context).size.height * 0.25,
             left: 0,

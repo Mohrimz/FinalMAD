@@ -9,42 +9,31 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  bool _isDarkMode = false;
-
-  void toggleDarkMode() {
-    setState(() {
-      _isDarkMode = !_isDarkMode;
-    });
-  }
-
+class MyApp extends StatelessWidget {
+  // Since we're using system theme settings, we no longer need to manage dark mode manually.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: _isDarkMode
-          ? ThemeData.dark().copyWith(
-              primaryColor: Colors.blue,
-              hintColor: Colors.purple,
-              scaffoldBackgroundColor: Colors.black,
-              appBarTheme: AppBarTheme(
-                backgroundColor: Colors.grey[850],
-              ),
-            )
-          : ThemeData.light().copyWith(
-              primaryColor: Colors.blue,
-              hintColor: Colors.purple,
-            ),
-      // By default, show MainScreen with a default user name.
-      // (This might be replaced by the LoginScreen in your authentication flow.)
+      // Define your light theme.
+      theme: ThemeData.light().copyWith(
+        primaryColor: Colors.blue,
+        hintColor: Colors.purple,
+      ),
+      // Define your dark theme.
+      darkTheme: ThemeData.dark().copyWith(
+        primaryColor: Colors.blue,
+        hintColor: Colors.purple,
+        scaffoldBackgroundColor: Colors.black,
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.grey[850],
+        ),
+      ),
+      // Follow the system setting.
+      themeMode: ThemeMode.system,
+      // Use MainScreen as the home.
       home: MainScreen(
-        toggleDarkMode: toggleDarkMode,
         userName: 'User',
       ),
     );
@@ -52,12 +41,10 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MainScreen extends StatefulWidget {
-  final Function toggleDarkMode;
   final String userName;
 
   const MainScreen({
     Key? key,
-    required this.toggleDarkMode,
     required this.userName,
   }) : super(key: key);
 
@@ -80,27 +67,29 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  List<Widget> _screens() {
-    return [
-      // Pass the userName to WelcomeScreen
-      WelcomeScreen(
-        favoriteProducts: favoriteProducts,
-        onFavoriteToggle: toggleFavorite,
-        userName: widget.userName,
-      ),
-      FavoritesScreen(favoriteProducts: favoriteProducts),
-      CartScreen(),
-      CustomProfileScreen(
-        toggleDarkMode: widget.toggleDarkMode,
-        logOut: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => LoginScreen()),
-          );
-        },
-      ),
-    ];
-  }
+  // Inside your _MainScreenState class
+List<Widget> _screens() {
+  return [
+    WelcomeScreen(
+      favoriteProducts: favoriteProducts,
+      onFavoriteToggle: toggleFavorite,
+      userName: widget.userName,
+    ),
+    FavoritesScreen(favoriteProducts: favoriteProducts),
+    CartScreen(),
+    CustomProfileScreen(
+      // Pass a dummy function since manual toggle is no longer needed.
+      toggleDarkMode: () {},
+      logOut: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+      },
+    ),
+  ];
+}
+
 
   void _onItemTapped(int index) {
     setState(() {
