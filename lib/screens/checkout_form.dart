@@ -30,17 +30,17 @@ class _CheckoutFormState extends State<CheckoutForm> {
 
   // Fixed shop locations.
   final Map<String, dynamic> _locationA = {
-    'name': 'Best Trends (Kollupitiya) A',
+    'name': 'TRENDY.LK 1',
     'latitude': 6.875138,
     'longitude': 79.877484,
-    'address': "WV5F+8H2, Gregory's Ave, Colombo 00700",
+    'address': "Gregory's Ave, Colombo 00800",
   };
 
   final Map<String, dynamic> _locationB = {
-    'name': 'Shop B',
+    'name': 'TRENDY.LK 2',
     'latitude': 6.912121,
     'longitude': 79.880407,
-    'address': "VVX6+RXH, Philip Gunewardena Mawatha, Colombo 00700",
+    'address': "Philip Gunewardena Mawatha, Colombo 00700",
   };
 
   @override

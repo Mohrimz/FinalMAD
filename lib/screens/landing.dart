@@ -56,7 +56,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             'name': product['name'] ?? 'No Name',
             'category': 'Shoes', // Update if your API provides a category.
             'price': '\$${product['price'] ?? 0}',
-            'rating': (product['rating'] ?? 0.0).toDouble(),
+            'rating': (product['rating'] ?? 4.6).toDouble(),
             'imagePath': product['target_file'] ?? '',
             'description': product['description'] ?? 'No description available',
           };
