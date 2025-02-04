@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:login/main.dart';
+import 'package:login/screens/checkout_form.dart';
 import 'package:login/screens/product_detail_screen.dart';
 
 // Function to calculate total amount
@@ -176,18 +176,12 @@ class _CartScreenState extends State<CartScreen> {
                       ElevatedButton(
                         onPressed: () {
                           Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MainScreen(
-                                // Provide a default toggleDarkMode function as needed.
-                                toggleDarkMode: () {
-                                  // Dark Mode toggling logic goes here.
-                                },
-                                // Provide a userName argument (replace "User" with actual user's name if available)
-                                userName: 'User',
-                              ),
-                            ),
-                          );
+  context,
+  MaterialPageRoute(
+    builder: (context) => CheckoutForm(),
+  ),
+);
+
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
