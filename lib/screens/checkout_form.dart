@@ -3,23 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-
-// Dummy welcome screen for redirection. Replace with your actual welcome screen.
-class WelcomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // You can style this as needed.
-      appBar: AppBar(title: Text('Welcome')),
-      body: Center(
-        child: Text(
-          'Welcome!',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-}
+import 'package:login/screens/profile_screen.dart'; // Import your actual ProfileScreen (or CustomProfileScreen).
 
 class CheckoutForm extends StatefulWidget {
   @override
@@ -41,7 +25,6 @@ class _CheckoutFormState extends State<CheckoutForm> {
   bool _isCalculating = false;
   bool _locationInfoVisible = false;
   List<Map<String, dynamic>> _locationDistances = [];
-  Position? _userPosition;
   String? _userAddress;
   Map<String, dynamic>? _selectedShop;
 
@@ -71,15 +54,12 @@ class _CheckoutFormState extends State<CheckoutForm> {
     super.dispose();
   }
 
-  /// Toggles the display of location info.
-  ///  
-  /// If visible, it hides it; if hidden, it fetches the device's current location,
-  /// reverse-geocodes it, calculates distances to the shops, and then shows the info.
+  /// Fetches the current location, reverse-geocodes the address,
+  /// calculates distances to the fixed shops, and displays the shop selection.
   Future<void> _fetchLocationAndCalculateDistances() async {
     if (_locationInfoVisible) {
       setState(() {
         _locationInfoVisible = false;
-        _userPosition = null;
         _locationDistances = [];
         _userAddress = null;
         _selectedShop = null;
@@ -99,7 +79,6 @@ class _CheckoutFormState extends State<CheckoutForm> {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
-      _userPosition = position;
 
       // Reverse geocode to get the formatted address.
       List<Placemark> placemarks =
@@ -156,6 +135,46 @@ class _CheckoutFormState extends State<CheckoutForm> {
     }
   }
 
+  /// Shows a modal dialog confirming the order.
+  void _showOrderConfirmationDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent closing by tapping outside.
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Order Confirmed'),
+          content: Text(
+            '${_selectedShop!['name']} will be ready to take your order.',
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog.
+                // Navigate to your actual ProfileScreen.
+                // Replace CustomProfileScreen with your profile screen if needed.
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CustomProfileScreen(
+                      toggleDarkMode: () {}, 
+                      logOut: () {},
+                    ),
+                  ),
+                );
+              },
+              child: Text(
+                'OK',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Validates the form and, if a shop is selected, shows the confirmation dialog.
   void _placeOrder() {
     if (_formKey.currentState!.validate()) {
       if (_selectedShop == null) {
@@ -165,11 +184,8 @@ class _CheckoutFormState extends State<CheckoutForm> {
         return;
       }
       // Process the order here.
-      // Then, redirect to the WelcomeScreen.
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => WelcomeScreen()),
-      );
+      // Then, show the modal confirmation dialog.
+      _showOrderConfirmationDialog();
     }
   }
 
@@ -412,7 +428,8 @@ class _CheckoutFormState extends State<CheckoutForm> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                  textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  textStyle:
+                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
