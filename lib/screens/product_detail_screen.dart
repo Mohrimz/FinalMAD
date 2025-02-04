@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // For HapticFeedback
 import 'package:login/screens/cart_screen.dart';
 
 // Global state for the cart
@@ -39,8 +40,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   void toggleCart() {
     setState(() {
       if (isInCart) {
+        // Trigger a medium impact when removing from the cart.
+        HapticFeedback.mediumImpact();
         cart.removeWhere((item) => item['name'] == widget.productName);
+        _showCartAnimation(success: false); // Show removal animation
       } else {
+        // Trigger a light impact when adding to the cart.
+        HapticFeedback.lightImpact();
         cart.add({
           'name': widget.productName,
           'price': widget.price,
@@ -48,8 +54,89 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           'category': widget.category,
           'quantity': 1,
         });
+        _showCartAnimation(success: true); // Show addition animation
       }
       isInCart = !isInCart;
+    });
+  }
+
+  /// Displays an animated overlay to provide visual feedback.
+  /// If [success] is true, it shows a check mark and "Added to Cart" message;
+  /// otherwise, it shows a cross and "Removed from Cart" message.
+  void _showCartAnimation({required bool success}) {
+    // Declare a local variable for the message.
+    final String message = success ? 'Added to Cart' : 'Removed from Cart';
+
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.4),
+      transitionDuration: const Duration(milliseconds: 500),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Center(
+          child: ScaleTransition(
+            scale: CurvedAnimation(
+              parent: animation,
+              curve: Curves.elasticOut,
+              reverseCurve: Curves.easeIn,
+            ),
+            child: FadeTransition(
+              opacity: animation,
+              child: Container(
+                width: 220,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: success
+                        ? [Colors.greenAccent.shade200, Colors.green.shade400]
+                        : [Colors.redAccent.shade200, Colors.red.shade400],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      success ? Icons.check_circle_outline : Icons.highlight_off,
+                      size: 64,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      message,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        // The combined scale and fade transition is defined in pageBuilder.
+        return child;
+      },
+    );
+
+    // Automatically dismiss the dialog after 1 second.
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      if (Navigator.canPop(context)) {
+        Navigator.of(context).pop();
+      }
     });
   }
 
@@ -75,7 +162,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       // Using a CustomScrollView with a SliverAppBar for a modern collapsible header.
@@ -198,6 +285,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: toggleCart,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isInCart ? Colors.green : Colors.deepPurple,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        // Remove the default splash to let our animation stand out.
+                        splashFactory: NoSplash.splashFactory,
+                      ),
                       icon: Icon(
                         isInCart ? Icons.remove_shopping_cart : Icons.add_shopping_cart,
                         color: isDarkMode ? Colors.white : Colors.black,
@@ -207,13 +303,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           color: isDarkMode ? Colors.white : Colors.black,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isInCart ? Colors.green : Colors.deepPurple,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                     ),

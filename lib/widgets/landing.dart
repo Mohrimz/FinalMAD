@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:login/screens/product_detail_screen.dart' as detail;
+import 'package:login/screens/product_detail_screen.dart';
 
 class FeaturedProductCard extends StatelessWidget {
   final String imagePath;
@@ -9,7 +9,7 @@ class FeaturedProductCard extends StatelessWidget {
   final double rating;
   final bool isFavorite;
   final Function onFavoriteToggle;
-  final String description;
+  final String description; // New property for the description
 
   const FeaturedProductCard({
     Key? key,
@@ -20,58 +20,25 @@ class FeaturedProductCard extends StatelessWidget {
     required this.rating,
     required this.isFavorite,
     required this.onFavoriteToggle,
-    required this.description,
+    required this.description, // Make it required
   }) : super(key: key);
-
-  /// Returns an image widget after normalizing the image path.
-  Widget _buildProductImage() {
-    String normalizedPath = imagePath;
-    // If the path starts with "images/", add "assets/" prefix.
-    if (imagePath.startsWith("images/")) {
-      normalizedPath = "assets/" + imagePath;
-    }
-    
-    if (normalizedPath.startsWith("assets/")) {
-      return Image.asset(
-        normalizedPath,
-        height: 125,
-        width: double.infinity,
-        fit: BoxFit.cover,
-      );
-    } else {
-      return Image.network(
-        imagePath,
-        height: 125,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return Image.asset(
-            'assets/images/placeholder.png', // A fallback placeholder image.
-            height: 125,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          );
-        },
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Material(
       child: InkWell(
         onTap: () {
-          // Navigate to the product detail screen.
+          // Navigate to ProductDetailScreen, now including description.
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => detail.ProductDetailScreen(
+              builder: (context) => ProductDetailScreen(
                 imagePath: imagePath,
                 productName: name,
                 category: category,
                 rating: rating,
                 price: price,
-                description: description,
+                description: description, // Pass the description
               ),
             ),
           );
@@ -94,35 +61,84 @@ class FeaturedProductCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
-                child: _buildProductImage(),
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                    child: Image.network(
+                      imagePath,
+                      height: 125,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      loadingBuilder:
+                          (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        } else {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          );
+                        }
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(
+                          Icons.broken_image,
+                          size: 125,
+                          color: Colors.grey,
+                        );
+                      },
+                    ),
+                  ),
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: GestureDetector(
+                      onTap: () {
+                        onFavoriteToggle();
+                      },
+                      child: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.red : Colors.blue,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 child: Text(
                   name,
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.black),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
                   category,
-                  style: const TextStyle(fontSize: 15, color: Colors.grey),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
               const Spacer(),
               Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 20),
+                padding:
+                    const EdgeInsets.only(left: 10, right: 10, bottom: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
