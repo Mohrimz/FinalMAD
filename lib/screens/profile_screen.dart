@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:login/screens/edit_profile_screen.dart';
 import 'package:login/screens/signup_screen.dart';
 import 'package:login/widgets/profile_option.dart';
-import '../widgets/profile.dart';
+import '../widgets/profile.dart'; // Ensure that WaveClipper is defined in this file or imported
 
 class CustomProfileScreen extends StatelessWidget {
   final Function toggleDarkMode;
-  final Function logOut; 
+  final Function logOut;
+  final String userName; // Dynamic user name
 
-  const CustomProfileScreen({super.key, required this.toggleDarkMode, required this.logOut});
+  const CustomProfileScreen({
+    Key? key,
+    required this.toggleDarkMode,
+    required this.logOut,
+    required this.userName,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +24,11 @@ class CustomProfileScreen extends StatelessWidget {
       backgroundColor: isDarkMode ? Colors.black : Colors.white,
       body: Stack(
         children: [
+          // Background wave design
           Positioned(
             top: 0,
             child: ClipPath(
-              clipper: WaveClipper(),
+              clipper: WaveClipper(), // Make sure you have defined WaveClipper
               child: Container(
                 height: 250,
                 width: MediaQuery.of(context).size.width,
@@ -35,6 +42,7 @@ class CustomProfileScreen extends StatelessWidget {
               ),
             ),
           ),
+          // Profile content
           Positioned(
             top: 100,
             left: 0,
@@ -43,11 +51,12 @@ class CustomProfileScreen extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: AssetImage('assets/images/profile.jpg'),
+                  backgroundImage: const AssetImage('assets/images/profile.jpg'),
                 ),
                 const SizedBox(height: 8),
+                // Display the dynamic user name here
                 Text(
-                  'Mohomed Rimzan',
+                  userName,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -64,10 +73,11 @@ class CustomProfileScreen extends StatelessWidget {
                         title: 'My Profile',
                         onTap: () {
                           Navigator.push(
-  context,
-  MaterialPageRoute(builder: (context) => EditProfileScreen()),
-);
-
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditProfileScreen(),
+                            ),
+                          );
                         },
                         textColor: isDarkMode ? Colors.white : Colors.black,
                       ),
@@ -96,15 +106,17 @@ class CustomProfileScreen extends StatelessWidget {
                         textColor: isDarkMode ? Colors.white : Colors.black,
                       ),
                       SwitchListTile(
-                        title: const Text('Mode'), 
+                        title: const Text('Mode'),
                         value: isDarkMode,
                         onChanged: (bool value) {
-                          toggleDarkMode(); 
+                          toggleDarkMode();
                         },
-                        activeColor: Colors.blue, 
+                        activeColor: Colors.blue,
                         subtitle: Text(
                           '',
-                          style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
                         ),
                       ),
                       ProfileOption(
@@ -114,8 +126,11 @@ class CustomProfileScreen extends StatelessWidget {
                         onTap: () {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => SignUpScreen()), 
+                            MaterialPageRoute(
+                              builder: (context) => SignUpScreen(),
+                            ),
                           );
+                          logOut();
                         },
                       ),
                     ],

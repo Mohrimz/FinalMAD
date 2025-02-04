@@ -6,7 +6,7 @@ import 'package:login/widgets/category_item.dart';
 import 'package:login/widgets/landing.dart';
 import 'package:login/services/api_service.dart'; 
 
-// A helper function to load dummy products from assets.
+/// Loads dummy products from a local JSON file.
 Future<List<dynamic>> loadDummyProducts(BuildContext context) async {
   final String jsonString = await DefaultAssetBundle.of(context)
       .loadString('assets/dummy_products.json');
@@ -17,7 +17,7 @@ Future<List<dynamic>> loadDummyProducts(BuildContext context) async {
 class WelcomeScreen extends StatefulWidget {
   final List<Map<String, dynamic>> favoriteProducts;
   final Function(Map<String, dynamic>) onFavoriteToggle;
-  final String userName; // To hold the user's name
+  final String userName; // User's name to display in the header
 
   const WelcomeScreen({
     Key? key,
@@ -33,8 +33,11 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   List<Map<String, dynamic>> products = [];
   bool isLoading = true;
-  bool _isOffline = false; // Flag to indicate offline mode
+  bool _isOffline = false; // Indicates if the app is offline
   String selectedCategory = 'Nike';
+
+  // List of categories for the horizontal list.
+  final List<String> categories = ['Nike', 'Adidas', 'Puma', 'Fila'];
 
   @override
   void initState() {
@@ -42,6 +45,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     fetchProducts();
   }
 
+  /// Attempts to fetch products from the API.
+  /// If the API call fails, loads dummy data from local JSON.
   Future<void> fetchProducts() async {
     try {
       final fetchedProducts = await ApiService.fetchProducts();
@@ -60,7 +65,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       });
     } catch (e) {
       print("Error fetching products from API: $e");
-      // Mark as offline and load dummy data from a local JSON file.
       setState(() {
         _isOffline = true;
       });
@@ -90,275 +94,301 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
+  /// Toggles the favorite status for the given product.
   void toggleFavorite(Map<String, dynamic> product) {
     widget.onFavoriteToggle(product);
     setState(() {});
   }
 
-  final List<String> categories = ['Nike', 'Adidas', 'Puma', 'Fila'];
-
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final double screenWidth = MediaQuery.of(context).size.width;
 
     return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Offline Banner (only shows when _isOffline is true)
-            if (_isOffline)
-              Container(
-                width: double.infinity,
-                color: Colors.redAccent,
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  "You're offline.",
-                  style: TextStyle(color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            const SizedBox(height: 20),
-            // Header: "Welcome" and the user's name
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Welcome',
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.07,
-                          fontWeight: FontWeight.bold,
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        ),
-                      ),
-                      Text(
-                        widget.userName,
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.045,
-                          color: isDarkMode ? Colors.white54 : Colors.grey,
-                        ),
-                      ),
-                    ],
+      child: Scaffold(
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Offline banner shown only if _isOffline is true.
+              if (_isOffline)
+                Container(
+                  width: double.infinity,
+                  color: Colors.redAccent,
+                  padding: const EdgeInsets.all(8),
+                  child: const Text(
+                    "You're offline.",
+                    style: TextStyle(color: Colors.white),
+                    textAlign: TextAlign.center,
                   ),
-                  // Search and Step Counter icons
-                  Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.search, color: Colors.black),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SearchScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.directions_run, color: Colors.black),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const StepCounterScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            // New Collection card
-            Padding(
-              padding: EdgeInsets.all(screenWidth * 0.05),
-              child: Container(
-                height: screenWidth * 0.45,
-                decoration: BoxDecoration(
-                  color: Colors.blue[100],
-                  borderRadius: BorderRadius.circular(16),
                 ),
+              const SizedBox(height: 20),
+              // Header section with a welcome message and icons.
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'New Collection',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
-                            ),
+                    // Welcome text and user's name.
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Welcome',
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.07,
+                            fontWeight: FontWeight.bold,
+                            color: isDarkMode ? Colors.white : Colors.black,
                           ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Discount 50% for\nthe first purchase',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.blue,
-                            ),
+                        ),
+                        Text(
+                          widget.userName,
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.045,
+                            color: isDarkMode ? Colors.white54 : Colors.grey,
                           ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                side: const BorderSide(color: Colors.blue),
+                        ),
+                      ],
+                    ),
+                    // Search and step counter icons.
+                    Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.search, color: Colors.black),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SearchScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: IconButton(
+                            icon:
+                                const Icon(Icons.directions_run, color: Colors.black),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const StepCounterScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              // New Collection card with gradient background.
+              Padding(
+                padding: EdgeInsets.all(screenWidth * 0.05),
+                child: Container(
+                  height: screenWidth * 0.45,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.blue.shade200, Colors.blue.shade400],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      // Collection text and button.
+                      Expanded(
+                        flex: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'New Collection',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                            ),
-                            child: const Text(
-                              'Shop Now',
-                              style: TextStyle(
-                                color: Colors.blue,
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Discount 50% for\nthe first purchase',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    side: const BorderSide(color: Colors.white),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                ),
+                                child: const Text(
+                                  'Shop Now',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
+                      ),
+                      // Collection image.
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.asset(
+                            'assets/images/image23.png',
+                            height: screenWidth * 0.35,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Categories header.
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Categories',
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.05,
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode ? Colors.white : Colors.black,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset(
-                        'assets/images/image23.png',
-                        height: screenWidth * 0.35,
-                        fit: BoxFit.contain,
+                    Text(
+                      'See all',
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.04,
+                        color: Colors.blue,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            // Categories section
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Categories',
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.05,
-                      fontWeight: FontWeight.bold,
-                      color: isDarkMode ? Colors.white : Colors.black,
-                    ),
-                  ),
-                  Text(
-                    'See all',
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.04,
-                      color: Colors.blue,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              height: 90,
-              padding: const EdgeInsets.only(left: 16),
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  String category = categories[index];
-                  bool isSelected = selectedCategory == category;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedCategory = category;
-                      });
-                    },
-                    child: CategoryItem(
-                      imagePath: 'assets/images/$category.png',
-                      label: category,
-                      isSelected: isSelected,
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Featured products section
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Featured',
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.05,
-                      fontWeight: FontWeight.bold,
-                      color: isDarkMode ? Colors.white : Colors.black,
-                    ),
-                  ),
-                  Text(
-                    'See all',
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.04,
-                      color: Colors.blue,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : products.isEmpty
-                    ? const Center(child: Text('No products found'))
-                    : Container(
-                        height: 250,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: products.length,
-                          itemBuilder: (context, index) {
-                            final product = products[index];
-                            // Determine favorite status by checking the global favorite list.
-                            bool isFavorite = widget.favoriteProducts.any(
-                                (fav) => fav['name'] == product['name']);
-                            return FeaturedProductCard(
-                              imagePath: product['imagePath'],
-                              name: product['name'],
-                              category: product['category'],
-                              price: product['price'],
-                              rating: 4.6,
-                              isFavorite: isFavorite,
-                              onFavoriteToggle: () => toggleFavorite(product),
-                              description: product['description'] ??
-                                  'No description available',
-                            );
-                          },
-                        ),
+              // Horizontal list of category items.
+              Container(
+                height: 90,
+                padding: const EdgeInsets.only(left: 16),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    String category = categories[index];
+                    bool isSelected = selectedCategory == category;
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedCategory = category;
+                        });
+                      },
+                      child: CategoryItem(
+                        imagePath: 'assets/images/$category.png',
+                        label: category,
+                        isSelected: isSelected,
                       ),
-          ],
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Featured products header.
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Featured',
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.05,
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                    ),
+                    Text(
+                      'See all',
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.04,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Products list.
+              isLoading
+                  ? const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : products.isEmpty
+                      ? const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: Center(child: Text('No products found')),
+                        )
+                      : Container(
+                          height: 250,
+                          padding: const EdgeInsets.only(left: 16),
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: products.length,
+                            itemBuilder: (context, index) {
+                              final product = products[index];
+                              // Check if product is marked as favorite.
+                              bool isFavorite = widget.favoriteProducts.any(
+                                  (fav) => fav['name'] == product['name']);
+                              return FeaturedProductCard(
+                                imagePath: product['imagePath'],
+                                name: product['name'],
+                                category: product['category'],
+                                price: product['price'],
+                                rating: product['rating'],
+                                isFavorite: isFavorite,
+                                onFavoriteToggle: () => toggleFavorite(product),
+                                description: product['description'] ??
+                                    'No description available',
+                              );
+                            },
+                          ),
+                        ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );

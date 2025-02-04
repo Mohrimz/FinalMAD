@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:login/screens/cart_screen.dart';
 import 'package:login/screens/favorites_screen.dart';
-import 'package:login/screens/landing.dart';
-import 'package:login/screens/profile_screen.dart';
+import 'package:login/screens/landing.dart';         // Contains WelcomeScreen, for example.
+import 'package:login/screens/profile_screen.dart';   // (If you use this separately)
 import 'package:login/screens/login_screen.dart';
 
 void main() {
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       // Use MainScreen as the home.
       home: MainScreen(
-        userName: 'User',
+        userName: 'User', // You can update this with a dynamic user name later.
       ),
     );
   }
@@ -67,29 +67,34 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  // Inside your _MainScreenState class
-List<Widget> _screens() {
-  return [
-    WelcomeScreen(
-      favoriteProducts: favoriteProducts,
-      onFavoriteToggle: toggleFavorite,
-      userName: widget.userName,
-    ),
-    FavoritesScreen(favoriteProducts: favoriteProducts),
-    CartScreen(),
-    CustomProfileScreen(
-      // Pass a dummy function since manual toggle is no longer needed.
-      toggleDarkMode: () {},
-      logOut: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginScreen()),
-        );
-      },
-    ),
-  ];
-}
-
+  // List of screens for the bottom navigation.
+  List<Widget> _screens() {
+    return [
+      // WelcomeScreen requires the user's name.
+      WelcomeScreen(
+        favoriteProducts: favoriteProducts,
+        onFavoriteToggle: toggleFavorite,
+        userName: widget.userName,
+      ),
+      // FavoritesScreen
+      FavoritesScreen(favoriteProducts: favoriteProducts),
+      // CartScreen
+      CartScreen(),
+      // CustomProfileScreen now also accepts userName.
+      CustomProfileScreen(
+        toggleDarkMode: () {
+          // Your toggle dark mode logic here.
+        },
+        logOut: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+          );
+        },
+        userName: widget.userName, // Pass the userName here.
+      ),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {

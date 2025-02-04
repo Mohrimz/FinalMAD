@@ -154,14 +154,15 @@ class _CheckoutFormState extends State<CheckoutForm> {
                 // Navigate to your actual ProfileScreen.
                 // Replace CustomProfileScreen with your profile screen if needed.
                 Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CustomProfileScreen(
-                      toggleDarkMode: () {}, 
-                      logOut: () {},
-                    ),
-                  ),
-                );
+  context,
+  MaterialPageRoute(
+    builder: (context) => CustomProfileScreen(
+      userName: _nameController.text, // Pass the required userName parameter.
+      toggleDarkMode: () {},
+      logOut: () {},
+    ),
+  ),
+);
               },
               child: Text(
                 'OK',

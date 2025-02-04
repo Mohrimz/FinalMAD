@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:login/main.dart'; // Make sure this import points to your updated main.dart.
 import 'package:login/services/api_service.dart';
 import 'package:login/widgets/custom_text_field.dart';
+import 'package:login/screens/signup_screen.dart'; // Import your SignUpScreen.
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -33,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
         print("Login response: $response");
 
         if (response['success']) {
-          // Navigate to the MainScreen with the user's name (no manual toggle required now).
+          // Navigate to the MainScreen with the user's name.
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -58,6 +59,13 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
+    );
+  }
+
+  void _navigateToSignUp() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SignUpScreen()),
     );
   }
 
@@ -119,13 +127,30 @@ class _LoginScreenState extends State<LoginScreen> {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          'Sign in to continue.',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: isDarkMode ? Colors.white70 : Colors.grey,
-                          ),
-                          textAlign: TextAlign.center,
+                        Column(
+                          children: [
+                            Text(
+                              'Sign in to continue.',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: isDarkMode ? Colors.white70 : Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 4),
+                            // "Sign Up" link.
+                            GestureDetector(
+                              onTap: _navigateToSignUp,
+                              child: Text(
+                                "Don't have an account? Sign up",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: isDarkMode ? Colors.lightBlueAccent : Colors.blue,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 30),
                         CustomTextField(
