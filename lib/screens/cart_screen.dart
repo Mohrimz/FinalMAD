@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:login/screens/checkout_form.dart';
-import 'package:login/screens/product_detail_screen.dart';
+import 'package:login/screens/product_detail_screen.dart' as productDetail;
+import 'package:login/globals.dart'; // Import the global cart variable
 
-// Function to calculate total amount
+// Function to calculate total amount.
 double _calculateTotal() {
   double total = 0;
   for (var item in cart) {
@@ -54,7 +55,6 @@ class _CartScreenState extends State<CartScreen> {
                           setState(() {
                             cart.removeAt(index);
                           });
-
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text("${product['name']} removed from cart"),

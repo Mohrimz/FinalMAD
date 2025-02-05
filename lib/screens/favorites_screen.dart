@@ -15,7 +15,6 @@ class FavoritesScreen extends StatefulWidget {
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
   void _addToCart(Map<String, dynamic> product) {
-    // Use the global cart variable from globals.dart.
     // Check if the product is not already in the cart.
     if (!cart.any((item) => item['name'] == product['name'])) {
       cart.add({
@@ -25,6 +24,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         'category': product['category'] ?? 'Category',
         'quantity': 1,
       });
+      // Optionally call setState to update the current screen if needed.
+      setState(() {}); 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${product['name']} added to cart!'),
@@ -47,7 +48,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       appBar: AppBar(
         title: const Text('Favorites'),
         actions: [
-          // Optional: AppBar cart icon to navigate directly to the cart.
+          // Optional: AppBar icon to navigate directly to the cart.
           IconButton(
             icon: const Icon(Icons.shopping_cart),
             onPressed: () {
@@ -60,9 +61,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         ],
       ),
       body: widget.favoriteProducts.isEmpty
-          ? const Center(
-              child: Text('No favorite products'),
-            )
+          ? const Center(child: Text('No favorite products'))
           : ListView.builder(
               itemCount: widget.favoriteProducts.length,
               itemBuilder: (context, index) {
@@ -102,8 +101,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   ),
                   title: Text(product['name']),
                   subtitle: Text(product['price']),
+                  // Replace the shopping cart icon with a plus icon.
                   trailing: IconButton(
-                    icon: const Icon(Icons.shopping_cart),
+                    icon: const Icon(Icons.add),
                     onPressed: () {
                       _addToCart(product);
                     },

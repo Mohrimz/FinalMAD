@@ -4,7 +4,7 @@ import 'package:login/screens/search_screen.dart';
 import 'package:login/screens/step_counter_screen.dart';
 import 'package:login/widgets/category_item.dart';
 import 'package:login/services/api_service.dart';
-import 'package:login/widgets/landing.dart'; // Ensure this import points to your FeaturedProductCard file
+import 'package:login/widgets/landing.dart'; 
 
 /// Loads dummy products from a local JSON file.
 Future<List<dynamic>> loadDummyProducts(BuildContext context) async {
