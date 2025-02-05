@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:login/screens/checkout_form.dart';
-import 'package:login/screens/product_detail_screen.dart' as productDetail;
 import 'package:login/globals.dart'; // Import the global cart variable
 
 // Function to calculate total amount.
@@ -18,6 +17,25 @@ double _calculateTotal() {
 double _parsePrice(String priceStr) {
   String cleaned = priceStr.replaceAll(RegExp(r'[^\d.]'), '');
   return double.tryParse(cleaned) ?? 0.0;
+}
+
+// Helper function to build the product image widget.
+// Checks if the imagePath is an asset (starts with "assets/") or a network image.
+Widget buildProductImage(String imagePath) {
+  if (imagePath.startsWith('assets/')) {
+    return Image.asset(
+      imagePath,
+      fit: BoxFit.cover,
+    );
+  } else {
+    return Image.network(
+      imagePath,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return const Icon(Icons.error, size: 50);
+      },
+    );
+  }
 }
 
 class CartScreen extends StatefulWidget {
@@ -88,7 +106,9 @@ class _CartScreenState extends State<CartScreen> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                       image: DecorationImage(
-                                        image: NetworkImage(product['imagePath']),
+                                        image: product['imagePath'].toString().startsWith('assets/')
+                                            ? AssetImage(product['imagePath'])
+                                            : NetworkImage(product['imagePath']) as ImageProvider,
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -110,7 +130,9 @@ class _CartScreenState extends State<CartScreen> {
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
-                                          '₹${product['price']}',
+                                          product['price'].toString().startsWith('₹')
+                                              ? product['price']
+                                              : '₹${product['price']}',
                                           style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,

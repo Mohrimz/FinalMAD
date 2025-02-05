@@ -39,7 +39,7 @@ dependencies:
   geolocator: ^9.0.2 
   geocoding: ^2.0.5
   sensors_plus: any
-  
+  battery_plus: any
   
   
 

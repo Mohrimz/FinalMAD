@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For HapticFeedback
 import 'package:login/screens/cart_screen.dart';
-
-// Global state for the cart
-final List<Map<String, dynamic>> cart = [];
+import 'package:login/globals.dart'; // Import the global cart variable
 
 class ProductDetailScreen extends StatefulWidget {
   final String imagePath;
@@ -64,7 +62,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   /// If [success] is true, it shows a check mark and "Added to Cart" message;
   /// otherwise, it shows a cross and "Removed from Cart" message.
   void _showCartAnimation({required bool success}) {
-    // Declare a local variable for the message.
     final String message = success ? 'Added to Cart' : 'Removed from Cart';
 
     showGeneralDialog(
@@ -127,7 +124,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         );
       },
       transitionBuilder: (context, animation, secondaryAnimation, child) {
-        // The combined scale and fade transition is defined in pageBuilder.
         return child;
       },
     );

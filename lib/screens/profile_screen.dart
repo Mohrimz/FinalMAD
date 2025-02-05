@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // For HapticFeedback
+import 'package:login/screens/BatteryStatusScreen.dart';
 import 'package:login/screens/edit_profile_screen.dart';
 import 'package:login/screens/signup_screen.dart';
 import 'package:login/widgets/profile_option.dart';
-import '../widgets/profile.dart'; // Ensure that WaveClipper is defined in this file or imported
+import '../widgets/profile.dart'; // Ensure that WaveClipper is defined or imported
 
 class CustomProfileScreen extends StatelessWidget {
   final Function toggleDarkMode;
@@ -18,7 +20,7 @@ class CustomProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: isDarkMode ? Colors.black : Colors.white,
@@ -28,7 +30,7 @@ class CustomProfileScreen extends StatelessWidget {
           Positioned(
             top: 0,
             child: ClipPath(
-              clipper: WaveClipper(), // Make sure you have defined WaveClipper
+              clipper: WaveClipper(), // Ensure WaveClipper is defined in your project
               child: Container(
                 height: 250,
                 width: MediaQuery.of(context).size.width,
@@ -103,6 +105,22 @@ class CustomProfileScreen extends StatelessWidget {
                         icon: Icons.settings,
                         title: 'Settings',
                         onTap: () {},
+                        textColor: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                      // New Battery Status Option
+                      ProfileOption(
+                        icon: Icons.battery_std,
+                        title: 'Battery Status',
+                        onTap: () {
+                          // Trigger light haptic feedback and navigate to BatteryStatusScreen.
+                          HapticFeedback.lightImpact();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const BatteryStatusScreen(),
+                            ),
+                          );
+                        },
                         textColor: isDarkMode ? Colors.white : Colors.black,
                       ),
                       SwitchListTile(
