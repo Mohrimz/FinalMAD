@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:login/screens/search_screen.dart';
 import 'package:login/screens/step_counter_screen.dart';
 import 'package:login/widgets/category_item.dart';
-import 'package:login/widgets/landing.dart';
-import 'package:login/services/api_service.dart'; 
+import 'package:login/services/api_service.dart';
+import 'package:login/widgets/landing.dart'; // Ensure this import points to your FeaturedProductCard file
 
 /// Loads dummy products from a local JSON file.
 Future<List<dynamic>> loadDummyProducts(BuildContext context) async {
@@ -50,6 +50,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Future<void> fetchProducts() async {
     try {
       final fetchedProducts = await ApiService.fetchProducts();
+      if (!mounted) return; // Ensure the widget is still mounted before calling setState.
       setState(() {
         products = fetchedProducts.map((product) {
           return {
@@ -65,11 +66,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       });
     } catch (e) {
       print("Error fetching products from API: $e");
+      if (!mounted) return;
       setState(() {
         _isOffline = true;
       });
       try {
         final dummyProducts = await loadDummyProducts(context);
+        if (!mounted) return;
         setState(() {
           products = dummyProducts.map((product) {
             return {
@@ -84,6 +87,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           isLoading = false;
         });
       } catch (localError) {
+        if (!mounted) return;
         setState(() {
           isLoading = false;
         });
@@ -179,8 +183,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: IconButton(
-                            icon:
-                                const Icon(Icons.directions_run, color: Colors.black),
+                            icon: const Icon(Icons.directions_run, color: Colors.black),
                             onPressed: () {
                               Navigator.push(
                                 context,

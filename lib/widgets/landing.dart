@@ -23,12 +23,62 @@ class FeaturedProductCard extends StatelessWidget {
     required this.description, // Make it required
   }) : super(key: key);
 
+  Widget _buildProductImage() {
+    // If imagePath starts with 'http', we load it as a network image;
+    // otherwise, we assume it is a local asset path.
+    if (imagePath.startsWith('http')) {
+      return Image.network(
+        imagePath,
+        height: 125,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent? loadingProgress) {
+          if (loadingProgress == null) {
+            return child;
+          } else {
+            return Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                    : null,
+              ),
+            );
+          }
+        },
+        errorBuilder: (context, error, stackTrace) {
+          return const Icon(
+            Icons.broken_image,
+            size: 125,
+            color: Colors.grey,
+          );
+        },
+      );
+    } else {
+      return Image.asset(
+        imagePath,
+        height: 125,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Image.asset(
+            'assets/images/placeholder.png',
+            height: 125,
+            width: double.infinity,
+            fit: BoxFit.cover,
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
       child: InkWell(
         onTap: () {
-          // Navigate to ProductDetailScreen, now including description.
+          // Navigate to ProductDetailScreen, passing description.
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -61,6 +111,7 @@ class FeaturedProductCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Image & favorite icon stack.
               Stack(
                 children: [
                   ClipRRect(
@@ -68,35 +119,7 @@ class FeaturedProductCard extends StatelessWidget {
                       topLeft: Radius.circular(16),
                       topRight: Radius.circular(16),
                     ),
-                    child: Image.network(
-                      imagePath,
-                      height: 125,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      loadingBuilder:
-                          (BuildContext context, Widget child,
-                              ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        } else {
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                  : null,
-                            ),
-                          );
-                        }
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(
-                          Icons.broken_image,
-                          size: 125,
-                          color: Colors.grey,
-                        );
-                      },
-                    ),
+                    child: _buildProductImage(),
                   ),
                   Positioned(
                     top: 10,
@@ -113,6 +136,7 @@ class FeaturedProductCard extends StatelessWidget {
                   ),
                 ],
               ),
+              // Product name.
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -125,6 +149,7 @@ class FeaturedProductCard extends StatelessWidget {
                   ),
                 ),
               ),
+              // Category.
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
@@ -136,6 +161,7 @@ class FeaturedProductCard extends StatelessWidget {
                 ),
               ),
               const Spacer(),
+              // Price and rating.
               Padding(
                 padding:
                     const EdgeInsets.only(left: 10, right: 10, bottom: 20),
