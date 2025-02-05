@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:login/screens/checkout_form.dart';
-import 'package:login/globals.dart'; // Import the global cart variable
+import 'package:login/globals.dart'; 
 
-// Function to calculate total amount.
+//Calculate total amount.
 double _calculateTotal() {
   double total = 0;
   for (var item in cart) {
@@ -13,14 +13,12 @@ double _calculateTotal() {
   return total;
 }
 
-// Helper function to parse a price string into a double.
+//String into a double.
 double _parsePrice(String priceStr) {
   String cleaned = priceStr.replaceAll(RegExp(r'[^\d.]'), '');
   return double.tryParse(cleaned) ?? 0.0;
 }
 
-// Helper function to build the product image widget.
-// Checks if the imagePath is an asset (starts with "assets/") or a network image.
 Widget buildProductImage(String imagePath) {
   if (imagePath.startsWith('assets/')) {
     return Image.asset(
@@ -49,7 +47,6 @@ class _CartScreenState extends State<CartScreen> {
     final totalAmount = _calculateTotal();
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    // Choose background and text colors for the total container based on the theme.
     final containerColor = isDarkMode ? Colors.grey[800] : Colors.grey[200];
     final textColor = isDarkMode ? Colors.white : Colors.black;
 
@@ -141,7 +138,6 @@ class _CartScreenState extends State<CartScreen> {
                                       ],
                                     ),
                                   ),
-                                  // Quantity Management
                                   Column(
                                     children: [
                                       Row(
@@ -178,7 +174,6 @@ class _CartScreenState extends State<CartScreen> {
                     },
                   ),
                 ),
-                // Total Amount and Checkout Section
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                   decoration: BoxDecoration(

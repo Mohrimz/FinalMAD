@@ -9,7 +9,7 @@ class FeaturedProductCard extends StatelessWidget {
   final double rating;
   final bool isFavorite;
   final Function onFavoriteToggle;
-  final String description; // New property for the description
+  final String description; 
 
   const FeaturedProductCard({
     Key? key,
@@ -20,12 +20,10 @@ class FeaturedProductCard extends StatelessWidget {
     required this.rating,
     required this.isFavorite,
     required this.onFavoriteToggle,
-    required this.description, // Make it required
+    required this.description, 
   }) : super(key: key);
 
   Widget _buildProductImage() {
-    // If imagePath starts with 'http', we load it as a network image;
-    // otherwise, we assume it is a local asset path.
     if (imagePath.startsWith('http')) {
       return Image.network(
         imagePath,
@@ -78,7 +76,6 @@ class FeaturedProductCard extends StatelessWidget {
     return Material(
       child: InkWell(
         onTap: () {
-          // Navigate to ProductDetailScreen, passing description.
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -88,7 +85,7 @@ class FeaturedProductCard extends StatelessWidget {
                 category: category,
                 rating: rating,
                 price: price,
-                description: description, // Pass the description
+                description: description, 
               ),
             ),
           );
@@ -111,7 +108,6 @@ class FeaturedProductCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Image & favorite icon stack.
               Stack(
                 children: [
                   ClipRRect(
@@ -136,7 +132,6 @@ class FeaturedProductCard extends StatelessWidget {
                   ),
                 ],
               ),
-              // Product name.
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -149,7 +144,6 @@ class FeaturedProductCard extends StatelessWidget {
                   ),
                 ),
               ),
-              // Category.
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
@@ -161,7 +155,6 @@ class FeaturedProductCard extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              // Price and rating.
               Padding(
                 padding:
                     const EdgeInsets.only(left: 10, right: 10, bottom: 20),

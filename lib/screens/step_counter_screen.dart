@@ -13,7 +13,6 @@ class StepCounterScreen extends StatefulWidget {
 
 class _StepCounterScreenState extends State<StepCounterScreen> {
   int stepCount = 0;
-  // Set a threshold for acceleration (this value may need tuning on real devices)
   final double threshold = 12.0;
   DateTime? lastStepTime;
   StreamSubscription? _subscription;
@@ -26,11 +25,8 @@ class _StepCounterScreenState extends State<StepCounterScreen> {
   }
 
   void _onAccelerometerEvent(AccelerometerEvent event) {
-    // Calculate the magnitude of the acceleration vector
     double acceleration = sqrt(event.x * event.x + event.y * event.y + event.z * event.z);
     
-    // Check if the acceleration exceeds the threshold.
-    // A time check is added to prevent multiple counts for one step.
     if (acceleration > threshold) {
       final now = DateTime.now();
       if (lastStepTime == null || now.difference(lastStepTime!) > const Duration(milliseconds: 300)) {
@@ -62,7 +58,6 @@ class _StepCounterScreenState extends State<StepCounterScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Optionally, you can reset the step count.
                 setState(() {
                   stepCount = 0;
                 });

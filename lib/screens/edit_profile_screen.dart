@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:login/main.dart';
 
 class EditProfileScreen extends StatelessWidget {
-  // If you no longer need a manual toggle, you can remove toggleDarkMode from the constructor.
-  // final Function toggleDarkMode; 
 
   const EditProfileScreen({Key? key}) : super(key: key); 
 

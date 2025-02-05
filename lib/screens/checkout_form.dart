@@ -1,9 +1,7 @@
-// checkout_form.dart
-
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:login/screens/profile_screen.dart'; // Import your actual ProfileScreen (or CustomProfileScreen).
+import 'package:login/screens/profile_screen.dart';
 
 class CheckoutForm extends StatefulWidget {
   @override
@@ -14,12 +12,12 @@ class _CheckoutFormState extends State<CheckoutForm> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers for form fields.
-  final TextEditingController _nameController    = TextEditingController();
-  final TextEditingController _emailController   = TextEditingController();
-  final TextEditingController _phoneController   = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _cardNumberController = TextEditingController();
-  final TextEditingController _expiryController  = TextEditingController();
-  final TextEditingController _cvvController     = TextEditingController();
+  final TextEditingController _expiryController = TextEditingController();
+  final TextEditingController _cvvController = TextEditingController();
 
   // State variables for location info.
   bool _isCalculating = false;
@@ -54,8 +52,7 @@ class _CheckoutFormState extends State<CheckoutForm> {
     super.dispose();
   }
 
-  /// Fetches the current location, reverse-geocodes the address,
-  /// calculates distances to the fixed shops, and displays the shop selection.
+  /// calculates distances to the nearest shops
   Future<void> _fetchLocationAndCalculateDistances() async {
     if (_locationInfoVisible) {
       setState(() {
@@ -74,13 +71,12 @@ class _CheckoutFormState extends State<CheckoutForm> {
       _selectedShop = null;
     });
 
+    //Getting my location
     try {
-      // Request the device's current position.
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      // Reverse geocode to get the formatted address.
       List<Placemark> placemarks =
           await placemarkFromCoordinates(position.latitude, position.longitude);
       if (placemarks.isNotEmpty) {
@@ -91,7 +87,7 @@ class _CheckoutFormState extends State<CheckoutForm> {
         _userAddress = "Address not found";
       }
 
-      // Calculate distances from the user's location to each shop.
+      // Calculating distance to other shops
       double distanceA = Geolocator.distanceBetween(
         position.latitude,
         position.longitude,
@@ -139,7 +135,7 @@ class _CheckoutFormState extends State<CheckoutForm> {
   void _showOrderConfirmationDialog() {
     showDialog(
       context: context,
-      barrierDismissible: false, // Prevent closing by tapping outside.
+      barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
           title: Text('Order Confirmed'),
@@ -150,19 +146,17 @@ class _CheckoutFormState extends State<CheckoutForm> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Close the dialog.
-                // Navigate to your actual ProfileScreen.
-                // Replace CustomProfileScreen with your profile screen if needed.
+                Navigator.pop(context);
                 Navigator.pushReplacement(
-  context,
-  MaterialPageRoute(
-    builder: (context) => CustomProfileScreen(
-      userName: _nameController.text, // Pass the required userName parameter.
-      toggleDarkMode: () {},
-      logOut: () {},
-    ),
-  ),
-);
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CustomProfileScreen(
+                      userName: _nameController.text,
+                      toggleDarkMode: () {},
+                      logOut: () {},
+                    ),
+                  ),
+                );
               },
               child: Text(
                 'OK',
@@ -175,35 +169,33 @@ class _CheckoutFormState extends State<CheckoutForm> {
     );
   }
 
-  /// Validates the form and, if a shop is selected, shows the confirmation dialog.
   void _placeOrder() {
     if (_formKey.currentState!.validate()) {
       if (_selectedShop == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please select a shop before placing the order.')),
+          SnackBar(
+              content: Text('Please select a shop before placing the order.')),
         );
         return;
       }
-      // Process the order here.
-      // Then, show the modal confirmation dialog.
       _showOrderConfirmationDialog();
     }
   }
 
-  /// Builds the shop selection buttons.
   Widget _buildShopButtons() {
     if (_locationDistances.isEmpty) return SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: _locationDistances.map((shop) {
         double distanceInKm = shop['distance'] / 1000;
-        bool isSelected = _selectedShop != null &&
-            _selectedShop!['name'] == shop['name'];
+        bool isSelected =
+            _selectedShop != null && _selectedShop!['name'] == shop['name'];
         return Container(
           margin: const EdgeInsets.symmetric(vertical: 4),
           child: OutlinedButton(
             style: OutlinedButton.styleFrom(
-              backgroundColor: isSelected ? Colors.lightBlueAccent : Colors.white,
+              backgroundColor:
+                  isSelected ? Colors.lightBlueAccent : Colors.white,
               side: BorderSide(
                 color: isSelected ? Colors.blue : Colors.grey,
                 width: 2,
@@ -241,7 +233,7 @@ class _CheckoutFormState extends State<CheckoutForm> {
     );
   }
 
-  /// Builds the card displaying the user's address and shop selection.
+  ///Displaying the user's address and shop selection.
   Widget _buildLocationInfo() {
     if (!_locationInfoVisible) return SizedBox.shrink();
     return Card(
@@ -271,7 +263,6 @@ class _CheckoutFormState extends State<CheckoutForm> {
     );
   }
 
-  /// Builds a styled input field with common decoration.
   Widget _buildInputField({
     required String label,
     required TextEditingController controller,
@@ -344,7 +335,7 @@ class _CheckoutFormState extends State<CheckoutForm> {
                 },
               ),
               SizedBox(height: 24),
-              // Payment Information Section
+              // Payment Information
               _buildInputField(
                 label: 'Card Number',
                 controller: _cardNumberController,
@@ -415,7 +406,7 @@ class _CheckoutFormState extends State<CheckoutForm> {
                   ),
                 ),
               ),
-              // Display location info and shop selection if available.
+              // Display location info
               _isCalculating
                   ? Padding(
                       padding: const EdgeInsets.all(16.0),

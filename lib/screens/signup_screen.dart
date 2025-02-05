@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:login/widgets/custom_text_field.dart';
 import 'package:login/screens/login_screen.dart';
 import 'package:login/screens/common_screen.dart';
-import 'package:login/services/api_service.dart'; // Import ApiService
+import 'package:login/services/api_service.dart'; 
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -14,8 +14,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  // For simplicity we use the same password for confirmation.
-  // In a production app, you might add a separate confirm password field.
   final _dobController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
@@ -23,24 +21,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Show loading indicator
       setState(() {
         _isLoading = true;
       });
 
       try {
-        // Call the API service to register the user.
         final response = await ApiService.register(
           _nameController.text.trim(),
           _emailController.text.trim(),
           _passwordController.text.trim(),
-          _passwordController.text.trim(), // Using the same value for password_confirmation.
+          _passwordController.text.trim(), 
         );
 
-        // You can print or process the response if needed.
         print('User registered successfully: ${response['user']}');
 
-        // Optionally, show a success message.
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Registration successful!'),

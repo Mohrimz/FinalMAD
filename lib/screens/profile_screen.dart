@@ -4,8 +4,7 @@ import 'package:login/screens/BatteryStatusScreen.dart';
 import 'package:login/screens/edit_profile_screen.dart';
 import 'package:login/screens/signup_screen.dart';
 import 'package:login/widgets/profile_option.dart';
-import '../widgets/profile.dart'; // Ensure that WaveClipper is defined or imported
-
+import '../widgets/profile.dart'; 
 class CustomProfileScreen extends StatelessWidget {
   final Function toggleDarkMode;
   final Function logOut;
@@ -30,7 +29,7 @@ class CustomProfileScreen extends StatelessWidget {
           Positioned(
             top: 0,
             child: ClipPath(
-              clipper: WaveClipper(), // Ensure WaveClipper is defined in your project
+              clipper: WaveClipper(),
               child: Container(
                 height: 250,
                 width: MediaQuery.of(context).size.width,
@@ -44,7 +43,6 @@ class CustomProfileScreen extends StatelessWidget {
               ),
             ),
           ),
-          // Profile content
           Positioned(
             top: 100,
             left: 0,
@@ -56,7 +54,6 @@ class CustomProfileScreen extends StatelessWidget {
                   backgroundImage: const AssetImage('assets/images/profile.jpg'),
                 ),
                 const SizedBox(height: 8),
-                // Display the dynamic user name here
                 Text(
                   userName,
                   style: TextStyle(
@@ -112,7 +109,7 @@ class CustomProfileScreen extends StatelessWidget {
                         icon: Icons.battery_std,
                         title: 'Battery Status',
                         onTap: () {
-                          // Trigger light haptic feedback and navigate to BatteryStatusScreen.
+                         
                           HapticFeedback.lightImpact();
                           Navigator.push(
                             context,

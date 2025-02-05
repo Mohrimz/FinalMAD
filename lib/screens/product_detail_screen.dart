@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // For HapticFeedback
+import 'package:flutter/services.dart'; 
 import 'package:login/screens/cart_screen.dart';
-import 'package:login/globals.dart'; // Import the global cart variable
+import 'package:login/globals.dart'; 
 
 class ProductDetailScreen extends StatefulWidget {
   final String imagePath;
@@ -31,19 +31,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   void initState() {
     super.initState();
-    // Check if the product is already in the cart.
     isInCart = cart.any((item) => item['name'] == widget.productName);
   }
 
   void toggleCart() {
     setState(() {
       if (isInCart) {
-        // Trigger a medium impact when removing from the cart.
         HapticFeedback.mediumImpact();
         cart.removeWhere((item) => item['name'] == widget.productName);
-        _showCartAnimation(success: false); // Show removal animation
+        _showCartAnimation(success: false);
       } else {
-        // Trigger a light impact when adding to the cart.
         HapticFeedback.lightImpact();
         cart.add({
           'name': widget.productName,
@@ -52,15 +49,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           'category': widget.category,
           'quantity': 1,
         });
-        _showCartAnimation(success: true); // Show addition animation
+        _showCartAnimation(success: true); 
       }
       isInCart = !isInCart;
     });
   }
 
-  /// Displays an animated overlay to provide visual feedback.
-  /// If [success] is true, it shows a check mark and "Added to Cart" message;
-  /// otherwise, it shows a cross and "Removed from Cart" message.
   void _showCartAnimation({required bool success}) {
     final String message = success ? 'Added to Cart' : 'Removed from Cart';
 
@@ -135,10 +129,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       }
     });
   }
-
-  /// Helper method to build the product image.
-  /// If the imagePath starts with "assets/", it loads a local asset;
-  /// otherwise, it loads a network image.
   Widget _buildProductImage() {
     if (widget.imagePath.startsWith("assets/")) {
       return Image.asset(
@@ -197,7 +187,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Product Name below the image.
                   Text(
                     widget.productName,
                     style: TextStyle(
@@ -207,7 +196,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  // Category and Price Row.
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -229,7 +217,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  // Hardcoded Rating Row (shows 4.6).
                   Row(
                     children: [
                       const Icon(Icons.star, color: Colors.yellow, size: 20),
@@ -244,7 +231,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // Description Card.
                   Card(
                     elevation: 4,
                     shape: RoundedRectangleBorder(
@@ -287,7 +273,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        // Remove the default splash to let our animation stand out.
                         splashFactory: NoSplash.splashFactory,
                       ),
                       icon: Icon(

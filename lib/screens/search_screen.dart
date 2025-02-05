@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:login/screens/product_detail_screen.dart';
 import 'package:login/services/api_service.dart';
 
-// Global cart state (for simplicity; consider a better state management approach for production)
 final List<Map<String, dynamic>> cart = [];
 
-// ******************** SEARCH SCREEN ********************
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -25,7 +23,7 @@ class _SearchScreenState extends State<SearchScreen> {
     fetchProducts();
   }
 
-  // Fetch products from your API (same as in WelcomeScreen)
+  // Fetch products from your API
   Future<void> fetchProducts() async {
     try {
       final fetchedProducts = await ApiService.fetchProducts();
@@ -162,7 +160,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // Product Image (no heart icon)
                                     ClipRRect(
                                       borderRadius: const BorderRadius.only(
                                         topLeft: Radius.circular(15),

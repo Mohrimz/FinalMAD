@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:login/main.dart'; // Make sure this import points to your updated main.dart.
+import 'package:login/main.dart'; 
 import 'package:login/services/api_service.dart';
 import 'package:login/widgets/custom_text_field.dart';
-import 'package:login/screens/signup_screen.dart'; // Import your SignUpScreen.
+import 'package:login/screens/signup_screen.dart'; 
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -30,11 +30,9 @@ class _LoginScreenState extends State<LoginScreen> {
         // Send login request to the API.
         final response = await ApiService.login(email, password);
 
-        // Debug: print the full API response.
         print("Login response: $response");
 
         if (response['success']) {
-          // Navigate to the MainScreen with the user's name.
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -77,7 +75,6 @@ class _LoginScreenState extends State<LoginScreen> {
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // Top image background.
           Positioned(
             top: 0,
             left: 0,
@@ -92,7 +89,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          // Form container.
           Positioned(
             top: MediaQuery.of(context).size.height * 0.25,
             left: 0,

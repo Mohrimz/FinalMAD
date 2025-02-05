@@ -6,7 +6,7 @@ import 'package:login/widgets/category_item.dart';
 import 'package:login/services/api_service.dart';
 import 'package:login/widgets/landing.dart'; 
 
-/// Loads dummy products from a local JSON file.
+/// Loading my local data whn offlne
 Future<List<dynamic>> loadDummyProducts(BuildContext context) async {
   final String jsonString = await DefaultAssetBundle.of(context)
       .loadString('assets/dummy_products.json');
@@ -17,7 +17,7 @@ Future<List<dynamic>> loadDummyProducts(BuildContext context) async {
 class WelcomeScreen extends StatefulWidget {
   final List<Map<String, dynamic>> favoriteProducts;
   final Function(Map<String, dynamic>) onFavoriteToggle;
-  final String userName; // User's name to display in the header
+  final String userName; 
 
   const WelcomeScreen({
     Key? key,
@@ -33,7 +33,7 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   List<Map<String, dynamic>> products = [];
   bool isLoading = true;
-  bool _isOffline = false; // Indicates if the app is offline
+  bool _isOffline = false; 
   String selectedCategory = 'Nike';
 
   // List of categories for the horizontal list.
@@ -45,8 +45,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     fetchProducts();
   }
 
-  /// Attempts to fetch products from the API.
-  /// If the API call fails, loads dummy data from local JSON.
   Future<void> fetchProducts() async {
     try {
       final fetchedProducts = await ApiService.fetchProducts();
@@ -98,7 +96,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
-  /// Toggles the favorite status for the given product.
   void toggleFavorite(Map<String, dynamic> product) {
     widget.onFavoriteToggle(product);
     setState(() {});
@@ -116,7 +113,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Offline banner shown only if _isOffline is true.
               if (_isOffline)
                 Container(
                   width: double.infinity,
@@ -129,13 +125,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                 ),
               const SizedBox(height: 20),
-              // Header section with a welcome message and icons.
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Welcome text and user's name.
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -156,7 +150,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         ),
                       ],
                     ),
-                    // Search and step counter icons.
                     Row(
                       children: [
                         Container(
@@ -200,7 +193,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              // New Collection card with gradient background.
               Padding(
                 padding: EdgeInsets.all(screenWidth * 0.05),
                 child: Container(
@@ -215,7 +207,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                   child: Row(
                     children: [
-                      // Collection text and button.
                       Expanded(
                         flex: 2,
                         child: Padding(
@@ -263,7 +254,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           ),
                         ),
                       ),
-                      // Collection image.
                       Expanded(
                         flex: 1,
                         child: Padding(
@@ -279,7 +269,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                 ),
               ),
-              // Categories header.
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                 child: Row(
@@ -303,7 +292,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ],
                 ),
               ),
-              // Horizontal list of category items.
               Container(
                 height: 90,
                 padding: const EdgeInsets.only(left: 16),
@@ -329,7 +317,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              // Featured products header.
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                 child: Row(
@@ -353,7 +340,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ],
                 ),
               ),
-              // Products list.
               isLoading
                   ? const Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),

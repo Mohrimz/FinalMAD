@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:login/screens/cart_screen.dart';
 import 'package:login/screens/favorites_screen.dart';
-import 'package:login/screens/landing.dart';         // Contains WelcomeScreen, for example.
-import 'package:login/screens/profile_screen.dart';   // (If you use this separately)
+import 'package:login/screens/landing.dart';        
+import 'package:login/screens/profile_screen.dart';   
 import 'package:login/screens/login_screen.dart';
 
 void main() {
@@ -10,18 +10,15 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // Since we're using system theme settings, we no longer need to manage dark mode manually.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      // Define your light theme.
       theme: ThemeData.light().copyWith(
         primaryColor: Colors.blue,
         hintColor: Colors.purple,
       ),
-      // Define your dark theme.
       darkTheme: ThemeData.dark().copyWith(
         primaryColor: Colors.blue,
         hintColor: Colors.purple,
@@ -30,9 +27,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.grey[850],
         ),
       ),
-      // Follow the system setting.
       themeMode: ThemeMode.system,
-      // Use MainScreen as the home.
       home: MainScreen(
         userName: 'User', // You can update this with a dynamic user name later.
       ),
@@ -67,23 +62,17 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  // List of screens for the bottom navigation.
   List<Widget> _screens() {
     return [
-      // WelcomeScreen requires the user's name.
       WelcomeScreen(
         favoriteProducts: favoriteProducts,
         onFavoriteToggle: toggleFavorite,
         userName: widget.userName,
       ),
-      // FavoritesScreen
       FavoritesScreen(favoriteProducts: favoriteProducts),
-      // CartScreen
       CartScreen(),
-      // CustomProfileScreen now also accepts userName.
       CustomProfileScreen(
         toggleDarkMode: () {
-          // Your toggle dark mode logic here.
         },
         logOut: () {
           Navigator.pushReplacement(
@@ -91,7 +80,7 @@ class _MainScreenState extends State<MainScreen> {
             MaterialPageRoute(builder: (context) => LoginScreen()),
           );
         },
-        userName: widget.userName, // Pass the userName here.
+        userName: widget.userName, 
       ),
     ];
   }

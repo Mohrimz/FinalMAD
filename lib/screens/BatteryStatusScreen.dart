@@ -32,7 +32,7 @@ class _BatteryStatusWidgetState extends State<BatteryStatusWidget> {
       });
     } catch (e) {
       setState(() {
-        _batteryLevel = -1; // Handle error as needed.
+        _batteryLevel = -1; 
       });
     }
   }

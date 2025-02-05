@@ -24,7 +24,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         'category': product['category'] ?? 'Category',
         'quantity': 1,
       });
-      // Optionally call setState to update the current screen if needed.
       setState(() {}); 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
